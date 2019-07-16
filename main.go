@@ -12,7 +12,7 @@ func main() {
 	screenWidth := int32(800)
 	screenHeight := int32(450)
 
-	rl.InitWindow(screenWidth, screenHeight, "Raylib Tinkering")
+	rl.InitWindow(screenWidth, screenHeight, "/r/roguelikedev 2019")
 	rl.SetTargetFPS(30)
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
