@@ -3,8 +3,8 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 type Game struct {
-	states    *stack
-	TxSprites rl.Texture2D
+	states  *stack
+	sprites *TileSheet
 }
 
 func (g *Game) PushState(state GameState) {
@@ -31,8 +31,8 @@ func (g *Game) PeekState() GameState {
 
 func newGame() *Game {
 	game := &Game{
-		states:    NewStack(),
-		TxSprites: rl.LoadTexture("sprites.png"),
+		states:  NewStack(),
+		sprites: newSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
 	}
 
 	game.PushState(NewLobbyState(game))
@@ -41,5 +41,5 @@ func newGame() *Game {
 }
 
 func (g *Game) Unload() {
-	rl.UnloadTexture(g.TxSprites)
+	g.sprites.Unload()
 }

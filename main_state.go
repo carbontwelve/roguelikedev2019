@@ -6,6 +6,10 @@ type MainState struct {
 	State
 }
 
+const (
+	spriteSize = 48
+)
+
 func NewMainState(g *Game) *MainState {
 	s := &MainState{
 		State: State{g},
