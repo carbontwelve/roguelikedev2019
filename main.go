@@ -16,7 +16,7 @@ func main() {
 	rl.SetTargetFPS(30)
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
-	game := newGame()
+	game := newEngine()
 
 	// Main Loop
 	//----------------------------------------------------------------------------------

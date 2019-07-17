@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -44,7 +43,7 @@ func newSpriteSheet(tx rl.Texture2D, w, h int) *TileSheet {
 				r: rl.NewRectangle(float32(x*w), float32(y*h), float32(w), float32(h)),
 				t: tileSheet,
 			})
-			fmt.Println("Setting Tile (", x, ",", y, ") Idx (", tileSheet.IdxAt(x, y), ") as Rect(", x*w, ",", y*h, ",", (x*w)+10, ",", (y*h)+10, ")")
+			// fmt.Println("Setting Tile (", x, ",", y, ") Idx (", tileSheet.IdxAt(x, y), ") as Rect(", x*w, ",", y*h, ",", (x*w)+10, ",", (y*h)+10, ")")
 		}
 	}
 

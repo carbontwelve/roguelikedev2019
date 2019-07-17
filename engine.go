@@ -2,44 +2,45 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-type Game struct {
+type Engine struct {
 	states  *stack
 	sprites *TileSheet
+	font    *Font
 }
 
-func (g *Game) PushState(state GameState) {
+func (g *Engine) PushState(state GameState) {
 	g.states.Push(state)
 }
 
-func (g *Game) PopState() {
+func (g *Engine) PopState() {
 	g.states.Pop()
 }
 
-func (g *Game) ChangeState(state GameState) {
+func (g *Engine) ChangeState(state GameState) {
 	if g.states.Len() > 0 {
 		g.states.Pop()
 	}
 	g.PushState(state)
 }
 
-func (g *Game) PeekState() GameState {
+func (g *Engine) PeekState() GameState {
 	if g.states.Len() == 0 {
 		return nil
 	}
 	return g.states.Peek().(GameState)
 }
 
-func newGame() *Game {
-	game := &Game{
+func newEngine() *Engine {
+	engine := &Engine{
 		states:  NewStack(),
 		sprites: newSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
 	}
 
-	game.PushState(NewLobbyState(game))
+	engine.PushState(NewLobbyState(engine))
 
-	return game
+	return engine
 }
 
-func (g *Game) Unload() {
+func (g *Engine) Unload() {
 	g.sprites.Unload()
 }

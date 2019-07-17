@@ -8,7 +8,7 @@ type LobbyState struct {
 	State
 }
 
-func NewLobbyState(g *Game) *LobbyState {
+func NewLobbyState(g *Engine) *LobbyState {
 	s := &LobbyState{
 		State: State{g},
 	}

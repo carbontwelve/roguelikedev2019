@@ -3,14 +3,14 @@ package main
 type GameState interface {
 	Draw(dt float32)
 	Update(dt float32)
-	SetGame(g *Game)
+	SetGame(g *Engine)
 	GetName() string
 }
 
 type State struct {
-	g *Game
+	g *Engine
 }
 
-func (s *State) SetGame(g *Game) {
+func (s *State) SetGame(g *Engine) {
 	s.g = g
 }

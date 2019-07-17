@@ -11,7 +11,7 @@ const (
 	spriteSize = 48
 )
 
-func NewMainState(g *Game) *MainState {
+func NewMainState(g *Engine) *MainState {
 	s := &MainState{
 		State: State{g},
 		x:     0,
