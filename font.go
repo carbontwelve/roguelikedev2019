@@ -5,6 +5,13 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+//
+// The tcod_codec_ comes from https://github.com/libtcod/libtcod/blob/master/src/libtcod/sys_sdl_c.cpp#L165
+// It is the codec for TCOD_FONT_LAYOUT_TCOD and converts from EASCII code-point -> raw tile position.
+// BSD 3-Clause License
+// Copyright © 2008-2019, Jice and the libtcod contributors. All rights reserved.
+//
+
 type tcod_codec_ [256]int
 
 func getTcodCodec() *tcod_codec_ {
