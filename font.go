@@ -5,6 +5,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+//noinspection GoSnakeCaseUsage,GoUnusedConst
 const (
 	/* single walls */
 	TCOD_CHAR_HLINE = 196
@@ -105,6 +106,7 @@ const (
 // Copyright © 2008-2019, Jice and the libtcod contributors. All rights reserved.
 //
 
+//noinspection GoSnakeCaseUsage
 type tcod_codec_ [256]int
 
 func getTcodCodec() *tcod_codec_ {
