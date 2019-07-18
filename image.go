@@ -5,7 +5,6 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"math"
 	"os"
 )
 
@@ -22,7 +21,7 @@ const (
 
 // @todo check filename is a png
 // @todo add error checking
-func newImage(filename string) {
+func convertImage(filename string) {
 	imgfile, err := os.Open(filename)
 	defer imgfile.Close()
 	if err != nil {
@@ -35,46 +34,15 @@ func newImage(filename string) {
 	size := img.Bounds().Size()
 	for x := 0; x < size.X; x++ {
 		for y := 0; y < size.Y; y++ {
-			r, g, b, _ := decodedImg.At(x, y).RGBA()
-
-			alpha := brightness(int(r), int(g), int(b))
-			fmt.Println(alpha)
-			img.Set(x, y, color.RGBA{R: uint8(255), G: uint8(255), B: uint8(255), A: uint8(alpha)})
+			r, g, b, _ := color.Gray16Model.Convert(decodedImg.At(x, y)).RGBA()
+			lum := (19595*r + 38470*g + 7471*b + 1<<15) >> 24
+			//img.Set(x, y, color.RGBA{R: 0, G: 0, B: 0, A: uint8(lum)})
+			img.Set(x, y, color.AlphaModel.Convert(color.RGBA{R: 0, G: 0, B: 0, A: uint8(lum)}))
 		}
 	}
 
-	outFile, _ := os.Create("changed-6.png")
+	outFile, _ := os.Create("changed-10.png")
 	defer outFile.Close()
 	png.Encode(outFile, img)
 
-}
-
-// Inverse of sRGB "gamma" function. (approx 2.2)
-func inverseGamma(ic int) float64 {
-	c := float64(ic / 255.0)
-	if c <= 0.04045 {
-		return c / 12.92
-	} else {
-		return math.Pow((c+0.055)/(1.055), 2.4)
-	}
-}
-
-// sRGB "gamma" function (approx 2.2)
-func gamma(v float64) int {
-	if v <= 0.0031308 {
-		v *= 12.92
-	} else {
-		v = 1.055*math.Pow(v, 1.0/2.4) - 0.055
-	}
-
-	// This is correct in C++. Other languages may not require +0.5
-	return int(v * 255)
-}
-
-// GRAY VALUE ("brightness")
-func brightness(r, g, b int) int {
-	return gamma(
-		rY*inverseGamma(r) +
-			gY*inverseGamma(g) +
-			bY*inverseGamma(b))
 }
