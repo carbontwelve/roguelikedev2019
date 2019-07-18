@@ -22,7 +22,7 @@ func NewMainState(g *Engine) *MainState {
 }
 
 func (s MainState) Draw(dt float32) {
-	rl.ClearBackground(Maroon)
+	rl.ClearBackground(rl.Yellow)
 
 	// test sprite sheet whole
 	for y := 0; y < s.g.sprites.Rows; y++ {

@@ -140,8 +140,12 @@ type Font struct {
 }
 
 func newFont(filename string, w, h int) *Font {
+
+	newImage(filename)
+
+	tex := rl.LoadTexture(filename)
 	font := &Font{
-		sprites:  newSpriteSheet(rl.LoadTexture(filename), w, h),
+		sprites:  newSpriteSheet(tex, w, h),
 		asciiMap: make(map[int]int),
 	}
 
