@@ -146,7 +146,7 @@ func newFont(filename string, w, h int) *Font {
 	}
 
 	font.decode()
-	font.Debug()
+	// font.Debug()
 	return font
 }
 
