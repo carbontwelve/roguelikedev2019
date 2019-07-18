@@ -1,21 +1,21 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"fmt"
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 type MainState struct {
-	x, y int
+	lastKeyCode, x, y int
 	State
 }
 
-const (
-	spriteSize = 48
-)
-
 func NewMainState(g *Engine) *MainState {
 	s := &MainState{
-		State: State{g},
-		x:     0,
-		y:     0,
+		State:       State{g},
+		x:           0,
+		y:           0,
+		lastKeyCode: 0,
 	}
 
 	return s
@@ -31,23 +31,16 @@ func (s MainState) Draw(dt float32) {
 		}
 	}
 
-	s.g.sprites.At(s.x, s.y).Draw(rl.NewVector2(10, 200), rl.Green)
-
+	s.g.font.Draw(s.lastKeyCode, rl.NewVector2(10, 200), rl.Green)
 }
 
 func (s *MainState) Update(dt float32) {
-	if rl.IsKeyPressed(rl.KeySpace) {
-		s.g.ChangeState(NewLobbyState(s.g))
-	} else if rl.IsKeyPressed(rl.KeyUp) {
-		s.x++
-		if s.x > s.g.sprites.Cols {
-			s.x = 0
-			s.y++
+	keyCode := int(rl.GetKeyPressed())
+	if keyCode > -1 {
+		if keyCode != s.lastKeyCode {
+			fmt.Println(keyCode)
 		}
-		if s.y > s.g.sprites.Rows {
-			s.x = 0
-			s.y = 0
-		}
+		s.lastKeyCode = keyCode
 	}
 }
 

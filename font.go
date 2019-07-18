@@ -186,3 +186,7 @@ func (f Font) Debug() {
 		fmt.Println("ASCII [", i, "] to idx [", f.asciiMap[i], "]")
 	}
 }
+
+func (f Font) Draw(ord int, position rl.Vector2, tint rl.Color) {
+	rl.DrawTextureRec(f.sprites.TxTiles, f.sprites.AtIdx(ord).r, position, tint)
+}

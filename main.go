@@ -28,9 +28,9 @@ func main() {
 		// Update
 		//----------------------------------------------------------------------------------
 
-		if rl.IsKeyPressed(rl.KeyF) {
-			rl.ToggleFullscreen()
-		}
+		//if rl.IsKeyPressed(rl.KeyF) {
+		//	rl.ToggleFullscreen()
+		//}
 
 		state.Update(frameTime)
 
