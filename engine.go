@@ -34,6 +34,7 @@ func newEngine() *Engine {
 	engine := &Engine{
 		states:  NewStack(),
 		sprites: newSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
+		font:    newFont("arial10x10.png", 10, 10),
 	}
 
 	engine.PushState(NewLobbyState(engine))

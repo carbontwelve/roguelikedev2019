@@ -59,6 +59,7 @@ func (t TileSheet) At(x, y int) *Tile {
 }
 
 func (t TileSheet) AtIdx(idx int) *Tile {
+	// @todo add bounds check
 	return t.Tiles[idx]
 }
 

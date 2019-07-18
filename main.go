@@ -28,9 +28,9 @@ func main() {
 		// Update
 		//----------------------------------------------------------------------------------
 
-		if rl.IsKeyPressed(rl.KeyF) {
-			rl.ToggleFullscreen()
-		}
+		//if rl.IsKeyPressed(rl.KeyF) {
+		//	rl.ToggleFullscreen()
+		//}
 
 		state.Update(frameTime)
 
@@ -38,11 +38,9 @@ func main() {
 		//----------------------------------------------------------------------------------
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.RayWhite)
-
 		state.Draw(frameTime)
 
-		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, rl.Black)
+		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, Yellow)
 		rl.EndDrawing()
 	}
 
