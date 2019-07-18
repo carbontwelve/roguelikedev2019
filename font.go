@@ -166,8 +166,7 @@ func (f *Font) decode() {
 }
 
 func (f *Font) mapAsciiToFont(asciiCode, fontCharX, fontCharY int) {
-	tileId := fontCharX + fontCharY*f.sprites.Cols
-	f.asciiMap[asciiCode] = tileId
+	f.asciiMap[asciiCode] = f.sprites.IdxAt(fontCharX, fontCharY)
 }
 
 func (f *Font) mapClone(newCodepoint, oldCodepoint int) {
@@ -187,6 +186,10 @@ func (f Font) Debug() {
 	}
 }
 
-func (f Font) Draw(ord int, position rl.Vector2, tint rl.Color) {
-	rl.DrawTextureRec(f.sprites.TxTiles, f.sprites.AtIdx(ord).r, position, tint)
+func (f Font) Draw(asciiCode int, position rl.Vector2, tint rl.Color) {
+	if asciiCode < 0 || asciiCode > 256 {
+		asciiCode = 0
+	}
+
+	rl.DrawTextureRec(f.sprites.TxTiles, f.sprites.AtIdx(f.asciiMap[asciiCode]).r, position, tint)
 }
