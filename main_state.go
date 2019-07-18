@@ -22,16 +22,16 @@ func NewMainState(g *Engine) *MainState {
 }
 
 func (s MainState) Draw(dt float32) {
-	rl.ClearBackground(rl.Yellow)
+	rl.ClearBackground(Maroon)
 
 	// test sprite sheet whole
 	for y := 0; y < s.g.sprites.Rows; y++ {
 		for x := 0; x < s.g.sprites.Cols; x++ {
-			s.g.sprites.At(x, y).Draw(rl.NewVector2(float32(10+(10*x)), float32(50+(10*y))), rl.Green)
+			s.g.sprites.At(x, y).Draw(rl.NewVector2(float32(10+(10*x)), float32(50+(10*y))), Yellow)
 		}
 	}
 
-	s.g.font.Draw(s.lastKeyCode, rl.NewVector2(10, 200), rl.Green)
+	s.g.font.Draw(s.lastKeyCode, rl.NewVector2(10, 200), Yellow)
 }
 
 func (s *MainState) Update(dt float32) {

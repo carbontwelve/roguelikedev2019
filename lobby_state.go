@@ -17,7 +17,7 @@ func NewLobbyState(g *Engine) *LobbyState {
 }
 
 func (s LobbyState) Draw(dt float32) {
-	// ...
+	rl.ClearBackground(Maroon)
 }
 
 func (s *LobbyState) Update(dt float32) {
