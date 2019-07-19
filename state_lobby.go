@@ -17,7 +17,7 @@ func NewLobbyState(e *Engine) *LobbyState {
 }
 
 func (s LobbyState) Draw(dt float32) {
-	rl.ClearBackground(Maroon)
+	rl.ClearBackground(UIBackgroundColour)
 }
 
 func (s *LobbyState) Update(dt float32) {

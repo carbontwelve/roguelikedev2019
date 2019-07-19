@@ -39,7 +39,7 @@ func main() {
 		rl.BeginDrawing()
 		state.Draw(frameTime)
 
-		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, Yellow)
+		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, PlayerColour)
 		rl.EndDrawing()
 	}
 

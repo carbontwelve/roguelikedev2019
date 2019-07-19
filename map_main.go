@@ -72,9 +72,9 @@ func (m GameMap) Draw(engine *Engine) {
 			wall := m.At(x, y).blocked
 			if wall == true {
 				// Draw Wall
-				engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, rl.Gray)
+				engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkWallColour)
 			} else {
-				engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, rl.RayWhite)
+				engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkGroundColour)
 			}
 		}
 	}

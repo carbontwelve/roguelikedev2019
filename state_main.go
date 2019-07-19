@@ -24,13 +24,13 @@ func NewMainState(e *Engine) *MainState {
 	}
 
 	gameMap := TutorialMapGenerator(80, 45, 10, 6, 30)
-	s.SetEntity("player", NewEntity(gameMap.PlayerStartX, gameMap.PlayerStartY, '@', Yellow))
+	s.SetEntity("player", NewEntity(gameMap.PlayerStartX, gameMap.PlayerStartY, '@', PlayerColour))
 	s.SetGameMap(gameMap)
 	return s
 }
 
 func (s MainState) Draw(dt float32) {
-	rl.ClearBackground(Maroon)
+	rl.ClearBackground(UIBackgroundColour)
 	s.DrawMap()
 	s.DrawEntities()
 }
