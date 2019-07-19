@@ -39,15 +39,15 @@ func (s *MainState) Update(dt float32) {
 	playerEntity := s.GetEntity("player")
 	gm := *s.GameMap
 
-	if rl.IsKeyPressed(rl.KeyUp) {
+	if rl.IsKeyDown(rl.KeyUp) {
 		playerEntity.Move(0, -1, gm)
-	} else if rl.IsKeyPressed(rl.KeyDown) {
+	} else if rl.IsKeyDown(rl.KeyDown) {
 		playerEntity.Move(0, 1, gm)
-	} else if rl.IsKeyPressed(rl.KeyLeft) {
+	} else if rl.IsKeyDown(rl.KeyLeft) {
 		playerEntity.Move(-1, 0, gm)
-	} else if rl.IsKeyPressed(rl.KeyRight) {
+	} else if rl.IsKeyDown(rl.KeyRight) {
 		playerEntity.Move(1, 0, gm)
-	} else if rl.IsKeyPressed(rl.KeySpace) {
+	} else if rl.IsKeyDown(rl.KeySpace) {
 		s.e.ChangeState(NewMainState(s.e))
 	}
 }
