@@ -13,7 +13,7 @@ func main() {
 	screenHeight := int32(450)
 
 	rl.InitWindow(screenWidth, screenHeight, "/r/roguelikedev 2019")
-	rl.SetTargetFPS(30)
+	rl.SetTargetFPS(15)
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := newEngine()
@@ -21,7 +21,6 @@ func main() {
 	// Main Loop
 	//----------------------------------------------------------------------------------
 	for !rl.WindowShouldClose() {
-
 		frameTime := rl.GetFrameTime()
 		state := game.PeekState()
 

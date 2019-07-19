@@ -135,7 +135,7 @@ func getTcodCodec() *tcod_codec_ {
 //       implement other formats if they need them :)
 //
 type Font struct {
-	sprites  *TileSheet
+	sprites  *SpriteSheet
 	asciiMap map[int]int // ascii_to_tcod
 }
 

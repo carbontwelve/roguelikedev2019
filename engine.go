@@ -4,7 +4,7 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 
 type Engine struct {
 	states  *stack
-	sprites *TileSheet
+	sprites *SpriteSheet
 	font    *Font
 }
 
