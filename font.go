@@ -141,7 +141,7 @@ type Font struct {
 
 func newFont(filename string, w, h int) *Font {
 
-	newImage(filename)
+	// convertImage(filename)
 
 	tex := rl.LoadTexture(filename)
 	font := &Font{
