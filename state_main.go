@@ -37,7 +37,7 @@ func (s MainState) Draw(dt float32) {
 
 func (s *MainState) Update(dt float32) {
 	playerEntity := s.GetEntity("player")
-	gm := *s.GameMap
+	gm := s.GameMap
 
 	if rl.IsKeyDown(rl.KeyUp) {
 		playerEntity.Move(0, -1, gm)
@@ -49,6 +49,10 @@ func (s *MainState) Update(dt float32) {
 		playerEntity.Move(1, 0, gm)
 	} else if rl.IsKeyDown(rl.KeySpace) {
 		s.e.ChangeState(NewMainState(s.e))
+	}
+
+	if s.GameMap.FOVRecompute == true {
+		s.GameMap.CalculateFov(playerEntity.x, playerEntity.y, 10, true, FOVCircular)
 	}
 }
 

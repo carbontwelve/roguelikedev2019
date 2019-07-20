@@ -8,10 +8,11 @@ import (
 type GameMap struct {
 	MWidth, MHeight, PlayerStartX, PlayerStartY int
 	Tiles                                       []*Tile
+	FOVRecompute                                bool
 }
 
 func NewGameMap(w, h int) *GameMap {
-	gameMap := GameMap{MWidth: w, MHeight: h, Tiles: make([]*Tile, w*h)}
+	gameMap := GameMap{MWidth: w, MHeight: h, Tiles: make([]*Tile, w*h), FOVRecompute: true}
 
 	// Initialise the tiles
 	for x := 0; x < w; x++ {
@@ -19,18 +20,6 @@ func NewGameMap(w, h int) *GameMap {
 			gameMap.Set(x, y, NewTile(true, true))
 		}
 	}
-
-	// Wide open space with four walls
-	//for x := 1; x < w-1; x++ {
-	//	for y := 1; y < h-1; y++ {
-	//		gameMap.At(x, y).blocked = false
-	//		gameMap.At(x, y).blockSight = false
-	//	}
-	//}
-
-	//gameMap.AddRoom(NewRect(20, 15, 10, 15))
-	//gameMap.AddRoom(NewRect(35, 15, 10, 15))
-	//gameMap.AddVTunnel(25, 40, 23)
 
 	return &gameMap
 }
@@ -61,20 +50,56 @@ func (m *GameMap) AddVTunnel(y1, y2, x int) {
 	}
 }
 
+//
+// Returns the center cell of the map
+//
 func (m GameMap) Center() (int, int) {
 	// @todo bounds check
 	return int(math.Floor(float64(m.MWidth/2))) - 1, int(math.Floor(float64(m.MHeight/2))) - 1
 }
 
+//
+// Returns whether the coordinate is inside the map bounds.
+//
+func (m GameMap) Inside(x, y int) bool {
+	return x >= 0 && x < m.MWidth && y >= 0 && y < m.MHeight
+}
+
+//
+// Update runs the give fov algorithm on the map.
+//
+func (m *GameMap) CalculateFov(x, y, radius int, includeWalls bool, algo FOVAlgo) {
+	for x := 0; x < m.MWidth; x++ {
+		for y := 0; y < m.MHeight; y++ {
+			m.At(x, y).inFOV = false
+		}
+	}
+
+	algo(m, x, y, radius, includeWalls)
+	m.FOVRecompute = false
+}
+
+//
+// Draw the map
+// @todo move to a render method?
+//
 func (m GameMap) Draw(engine *Engine) {
 	for x := 0; x < m.MWidth; x++ {
 		for y := 0; y < m.MHeight; y++ {
-			wall := m.At(x, y).blocked
-			if wall == true {
-				// Draw Wall
-				engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkWallColour)
+			cell := m.At(x, y)
+
+			if cell.blocked == true { // Is Wall?
+				color := DarkWallColour
+				if cell.inFOV {
+					color = LightWallColour
+				}
+				engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, color)
 			} else {
-				engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkGroundColour)
+				color := DarkGroundColour
+				if cell.inFOV {
+					color = LightGroundColour
+				}
+				engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, color)
 			}
 		}
 	}

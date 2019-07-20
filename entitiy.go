@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gen2brain/raylib-go/raylib"
+import (
+	"github.com/gen2brain/raylib-go/raylib"
+)
 
 type Entity struct {
 	x, y  int
@@ -17,10 +19,11 @@ func NewEntity(x, y int, char int, color rl.Color) *Entity {
 	}
 }
 
-func (e *Entity) Move(dx, dy int, gameMap GameMap) {
+func (e *Entity) Move(dx, dy int, gameMap *GameMap) {
 	if !gameMap.IsBlocked(e.x+dx, e.y+dy) {
 		e.x += dx
 		e.y += dy
+		gameMap.FOVRecompute = true // Need to recalculate FOV when player has moved
 	}
 }
 
