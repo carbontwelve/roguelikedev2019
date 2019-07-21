@@ -83,23 +83,25 @@ func (m *GameMap) CalculateFov(x, y, radius int, includeWalls bool, algo FOVAlgo
 // Draw the map
 // @todo move to a render method?
 //
-func (m GameMap) Draw(engine *Engine) {
+func (m *GameMap) Draw(engine *Engine) {
 	for x := 0; x < m.MWidth; x++ {
 		for y := 0; y < m.MHeight; y++ {
 			cell := m.At(x, y)
 
-			if cell.blocked == true { // Is Wall?
-				color := DarkWallColour
-				if cell.inFOV {
-					color = LightWallColour
+			if cell.inFOV {
+				// Can we see this cell?
+				if cell.blocked == true {
+					engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, LightWallColour)
+				} else {
+					engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, LightGroundColour)
 				}
-				engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, color)
-			} else {
-				color := DarkGroundColour
-				if cell.inFOV {
-					color = LightGroundColour
+			} else if cell.seen {
+				// Have we explored this cell?
+				if cell.blocked == true {
+					engine.font.Draw(178, rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkWallColour)
+				} else {
+					engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, DarkGroundColour)
 				}
-				engine.font.Draw('.', rl.Vector2{X: float32(x * engine.font.sprites.TWidth), Y: float32(y * engine.font.sprites.THeight)}, color)
 			}
 		}
 	}

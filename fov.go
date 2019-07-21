@@ -2,7 +2,8 @@ package main
 
 /**
  * This source code originated from the ROG project and is
- * Licensed BSD 2-clause
+ * Licensed BSD 2-clause. I have made modifications in order to make
+ * it fit within the scope of this project.
  *
  * Copyright (c) 2012 Joseph Hager. All rights reserved.
  *
@@ -60,7 +61,7 @@ func fovCircularCastRay(fov *GameMap, xo, yo, xd, yd, r2 int, walls bool) {
 	blocked := false
 	if fov.Inside(curx, cury) {
 		in = true
-		fov.At(curx, cury).inFOV = true
+		fov.At(curx, cury).SetInFOV()
 	}
 	for _, p := range Line(xo, yo, xd, yd) {
 		curx = p.X
@@ -79,7 +80,7 @@ func fovCircularCastRay(fov *GameMap, xo, yo, xd, yd, r2 int, walls bool) {
 				break
 			}
 			if walls || !blocked {
-				fov.At(curx, cury).inFOV = true
+				fov.At(curx, cury).SetInFOV()
 			}
 		} else if in {
 			break
@@ -95,17 +96,17 @@ func fovCircularPostProc(fov *GameMap, x0, y0, x1, y1, dx, dy int) {
 			if fov.Inside(cx, cy) && fov.At(cx, cy).inFOV && !fov.At(cx, cy).blocked {
 				if x2 >= x0 && x2 <= x1 {
 					if fov.Inside(x2, cy) && fov.At(x2, cy).blocked {
-						fov.At(x2, cy).inFOV = true
+						fov.At(x2, cy).SetInFOV()
 					}
 				}
 				if y2 >= y0 && y2 <= y1 {
 					if fov.Inside(cx, y2) && fov.At(cx, y2).blocked {
-						fov.At(cx, y2).inFOV = true
+						fov.At(cx, y2).SetInFOV()
 					}
 				}
 				if x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1 {
 					if fov.Inside(x2, y2) && fov.At(x2, y2).blocked {
-						fov.At(x2, y2).inFOV = true
+						fov.At(x2, y2).SetInFOV()
 					}
 				}
 			}

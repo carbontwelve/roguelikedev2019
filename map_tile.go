@@ -13,3 +13,8 @@ type Tile struct {
 func NewTile(blocked, blockSight bool) *Tile {
 	return &Tile{blocked: blocked, blockSight: blockSight, inFOV: false, seen: false}
 }
+
+func (t *Tile) SetInFOV() {
+	t.inFOV = true
+	t.seen = true
+}
