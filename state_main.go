@@ -23,7 +23,7 @@ func NewMainState(e *Engine) *MainState {
 		State: State{e: e},
 	}
 
-	gameMap := TutorialMapGenerator(80, 45, 10, 6, 30)
+	gameMap := TutorialMapGenerator(80, 45, 10, 6, 30, 3)
 	s.SetEntity("player", NewEntity(gameMap.PlayerStartX, gameMap.PlayerStartY, '@', PlayerColour))
 	s.SetGameMap(gameMap)
 	return s
