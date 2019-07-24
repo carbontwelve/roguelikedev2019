@@ -22,7 +22,7 @@ func (s LobbyState) Draw(dt float32) {
 
 func (s *LobbyState) Update(dt float32) {
 	if rl.IsKeyPressed(rl.KeySpace) {
-		s.e.ChangeState(NewMainState(s.e))
+		s.e.ChangeState(NewWorld(s.e))
 	}
 }
 

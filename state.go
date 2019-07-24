@@ -9,39 +9,37 @@ type GameState interface {
 }
 
 type State struct {
-	e        *Engine
-	Entities map[string]*Entity
-	GameMap  *GameMap
+	e *Engine
 }
 
-func (s *State) SetEntities(e map[string]*Entity) {
-	s.Entities = e
-}
-
-func (s *State) SetGameMap(m *GameMap) {
-	s.GameMap = m
-}
-
-func (s *State) SetEntity(name string, e *Entity) {
-	if s.Entities == nil {
-		s.SetEntities(make(map[string]*Entity))
-	}
-	s.Entities[name] = e
-}
-
-func (s *State) GetEntity(name string) *Entity {
-	return s.Entities[name]
-}
-
-func (s State) DrawEntities() {
-	for _, entity := range s.Entities {
-		entity.Draw(s.e)
-	}
-}
-
-func (s State) DrawMap() {
-	s.GameMap.Draw(s.e)
-}
+//func (s *State) SetEntities(e map[string]*Entity) {
+//	s.Entities = e
+//}
+//
+//func (s *State) SetGameMap(m *GameMap) {
+//	s.GameMap = m
+//}
+//
+//func (s *State) SetEntity(name string, e *Entity) {
+//	if s.Entities == nil {
+//		s.SetEntities(make(map[string]*Entity))
+//	}
+//	s.Entities[name] = e
+//}
+//
+//func (s *State) GetEntity(name string) *Entity {
+//	return s.Entities[name]
+//}
+//
+//func (s State) DrawEntities() {
+//	for _, entity := range s.Entities {
+//		entity.Draw(s.e)
+//	}
+//}
+//
+//func (s State) DrawMap() {
+//	s.GameMap.Draw(s.e)
+//}
 
 //
 // Save State to disk

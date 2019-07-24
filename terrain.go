@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strings"
 )
@@ -8,6 +9,19 @@ import (
 // Define terrain enum, used to determine if a map cell
 // is a wall or free
 type cellType int
+
+//
+// Terrain Generator functions return the players starting Position.
+//
+type TerrainGeneratorFunc func(*Terrain) Position
+
+func TestTerrainGenerator(t *Terrain) Position {
+	t.Fill(FreeCell)
+	t.SetCell(Position{30, 22}, WallCell)
+	t.SetCell(Position{31, 22}, WallCell)
+	t.SetCell(Position{32, 22}, WallCell)
+	return Position{30, 23}
+}
 
 const (
 	WallCell cellType = iota
@@ -25,12 +39,20 @@ type Cell struct {
 }
 
 type Terrain struct {
-	w, h                int
-	Cells               []Cell
-	PlayerStartPosition Position
+	w, h  int
+	Cells []Cell
+}
+
+//
+// Runs the provided terrain generator function against
+// this struct.
+//
+func (t *Terrain) Generate(f TerrainGeneratorFunc) Position {
+	return f(t)
 }
 
 func (t *Terrain) Cell(pos Position) Cell {
+	fmt.Println(pos.idx())
 	return t.Cells[pos.idx()]
 }
 
@@ -89,10 +111,16 @@ func GenTutorialTerrain(w, h int) *Terrain {
 	d := &Terrain{w: w, h: h}
 	d.Cells = make([]Cell, h*w)
 	d.Fill(WallCell)
-	d.PlayerStartPosition = d.Center()
 
 	d.SetCell(Position{10, 10}, FreeCell)
 
+	return d
+}
+
+func NewTerrain(w, h int) *Terrain {
+	d := &Terrain{w: w, h: h}
+	d.Cells = make([]Cell, h*w)
+	d.Fill(FreeCell)
 	return d
 }
 

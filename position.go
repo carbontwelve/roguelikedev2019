@@ -1,5 +1,7 @@
 package main
 
+import "github.com/gen2brain/raylib-go/raylib"
+
 //
 // @todo make this configurable?
 //
@@ -32,4 +34,24 @@ func (pos Position) idx() int {
 //
 func (pos Position) valid(w, h int) bool {
 	return pos.Y >= 0 && pos.Y < h && pos.X >= 0 && pos.X < w
+}
+
+func (pos Position) N() Position {
+	return Position{pos.X, pos.Y - 1}
+}
+
+func (pos Position) E() Position {
+	return Position{pos.X + 1, pos.Y}
+}
+
+func (pos Position) S() Position {
+	return Position{pos.X, pos.Y + 1}
+}
+
+func (pos Position) W() Position {
+	return Position{pos.X - 1, pos.Y}
+}
+
+func (pos Position) Vector2(exp int) rl.Vector2 {
+	return rl.Vector2{X: float32(pos.X * exp), Y: float32(pos.Y * exp)}
 }
