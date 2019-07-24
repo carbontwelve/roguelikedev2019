@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math/rand"
 	"time"
@@ -23,9 +24,12 @@ func NewMainState(e *Engine) *MainState {
 		State: State{e: e},
 	}
 
-	gameMap := TutorialMapGenerator(80, 45, 10, 6, 30, 3)
-	s.SetEntity("player", NewEntity(gameMap.PlayerStartX, gameMap.PlayerStartY, '@', PlayerColour))
-	s.SetGameMap(gameMap)
+	t := GenTutorialTerrain(80, 45)
+	fmt.Println(t.ToString())
+
+	//gameMap := TutorialMapGenerator(80, 45, 10, 6, 30, 3)
+	s.SetEntity("player", NewEntity(t.PlayerStartPosition, '@', PlayerColour))
+	//s.SetGameMap(gameMap)
 	return s
 }
 
@@ -51,9 +55,9 @@ func (s *MainState) Update(dt float32) {
 		s.e.ChangeState(NewMainState(s.e))
 	}
 
-	if s.GameMap.FOVRecompute == true {
-		s.GameMap.CalculateFov(playerEntity.x, playerEntity.y, 10, true, FOVCircular)
-	}
+	// if s.GameMap.FOVRecompute == true {
+	// s.GameMap.CalculateFov(playerEntity.x, playerEntity.y, 10, true, FOVCircular)
+	// }
 }
 
 func (s MainState) GetName() string {
