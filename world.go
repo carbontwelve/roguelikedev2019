@@ -31,8 +31,25 @@ func NewWorld(e *Engine) *World {
 func (w World) Draw(dt float32) {
 	rl.ClearBackground(UIBackgroundColour)
 
-	player := w.Entities.Get("player")
-	w.e.font.Draw(player.char, player.position.Vector2(10), player.color)
+	// Draw Terrain
+	for x := 0; x < w.Terrain.w; x++ {
+		for y := 0; y < w.Terrain.h; y++ {
+			pos := Position{x, y}
+			cell := w.Terrain.Cell(pos)
+
+			if cell.T == WallCell {
+				w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), LightWallColour)
+			} else {
+				w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), LightGroundColour)
+			}
+
+		}
+	}
+
+	// Draw Entities
+	for _, entity := range w.Entities.Entities {
+		w.e.font.Draw(entity.char, entity.position.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), entity.color)
+	}
 }
 
 func (w World) Update(dt float32) {

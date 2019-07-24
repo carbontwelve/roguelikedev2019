@@ -52,6 +52,6 @@ func (pos Position) W() Position {
 	return Position{pos.X - 1, pos.Y}
 }
 
-func (pos Position) Vector2(exp int) rl.Vector2 {
-	return rl.Vector2{X: float32(pos.X * exp), Y: float32(pos.Y * exp)}
+func (pos Position) Vector2(expX, expY int) rl.Vector2 {
+	return rl.Vector2{X: float32(pos.X * expX), Y: float32(pos.Y * expY)}
 }
