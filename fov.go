@@ -33,6 +33,55 @@ package main
  * @see https://github.com/ajhager/rog/blob/master/fov.go
  */
 
+type FovMap struct {
+	w, h             int
+	blocked, visible []bool
+	visibleCache     []int
+}
+
+func (f *FovMap) IsBlocked(pos Position) bool {
+	return f.blocked[pos.idx()]
+}
+
+func (f *FovMap) SetBlocked(pos Position, c bool) {
+	f.blocked[pos.idx()] = c
+}
+
+func (f *FovMap) IsVisible(pos Position) bool {
+	return f.visible[pos.idx()]
+}
+
+func (f *FovMap) SetVisible(pos Position) {
+	f.visible[pos.idx()] = true
+	f.visibleCache = append(f.visibleCache, pos.idx())
+}
+
+func (f *FovMap) ResetVisibility() {
+	for x := 0; x < f.w; x++ {
+		for y := 0; y < f.h; y++ {
+			f.visible[Position{x, y}.idx()] = false
+		}
+	}
+	f.visibleCache = []int{}
+}
+
+//
+// Returns whether the coordinate is inside the map bounds.
+//
+func (f FovMap) Inside(pos Position) bool {
+	return pos.valid(f.w, f.h)
+}
+
+func NewFovMap(w, h int) *FovMap {
+	return &FovMap{
+		w:            w,
+		h:            h,
+		blocked:      make([]bool, w*h),
+		visible:      make([]bool, w*h),
+		visibleCache: make([]int, 0),
+	}
+}
+
 //
 // FOVAlgo takes a FOVMap x,y vantage, radius of the view, whether to include
 // walls and then marks in the map which cells are viewable.
@@ -54,14 +103,14 @@ func min(a, b int) int {
 }
 
 // Circular Raycasting
-func fovCircularCastRay(fov *GameMap, xo, yo, xd, yd, r2 int, walls bool) {
+func fovCircularCastRay(fov *FovMap, xo, yo, xd, yd, r2 int, walls bool) {
 	curx := xo
 	cury := yo
 	in := false
 	blocked := false
-	if fov.Inside(curx, cury) {
+	if fov.Inside(Position{curx, cury}) {
 		in = true
-		fov.At(curx, cury).SetInFOV()
+		fov.SetVisible(Position{curx, cury})
 	}
 	for _, p := range Line(xo, yo, xd, yd) {
 		curx = p.X
@@ -72,15 +121,15 @@ func fovCircularCastRay(fov *GameMap, xo, yo, xd, yd, r2 int, walls bool) {
 				break
 			}
 		}
-		if fov.Inside(curx, cury) {
+		if fov.Inside(Position{curx, cury}) {
 			in = true
-			if !blocked && fov.At(curx, cury).blocked {
+			if !blocked && fov.IsBlocked(Position{curx, cury}) {
 				blocked = true
 			} else if blocked {
 				break
 			}
 			if walls || !blocked {
-				fov.At(curx, cury).SetInFOV()
+				fov.SetVisible(Position{curx, cury})
 			}
 		} else if in {
 			break
@@ -88,25 +137,25 @@ func fovCircularCastRay(fov *GameMap, xo, yo, xd, yd, r2 int, walls bool) {
 	}
 }
 
-func fovCircularPostProc(fov *GameMap, x0, y0, x1, y1, dx, dy int) {
+func fovCircularPostProc(fov *FovMap, x0, y0, x1, y1, dx, dy int) {
 	for cx := x0; cx <= x1; cx++ {
 		for cy := y0; cy <= y1; cy++ {
 			x2 := cx + dx
 			y2 := cy + dy
-			if fov.Inside(cx, cy) && fov.At(cx, cy).inFOV && !fov.At(cx, cy).blocked {
+			if fov.Inside(Position{cx, cy}) && fov.IsVisible(Position{cx, cy}) && !fov.IsBlocked(Position{cx, cy}) {
 				if x2 >= x0 && x2 <= x1 {
-					if fov.Inside(x2, cy) && fov.At(x2, cy).blocked {
-						fov.At(x2, cy).SetInFOV()
+					if fov.Inside(Position{x2, cy}) && fov.IsBlocked(Position{x2, cy}) {
+						fov.SetVisible(Position{x2, cy})
 					}
 				}
 				if y2 >= y0 && y2 <= y1 {
-					if fov.Inside(cx, y2) && fov.At(cx, y2).blocked {
-						fov.At(cx, y2).SetInFOV()
+					if fov.Inside(Position{cx, y2}) && fov.IsBlocked(Position{cx, y2}) {
+						fov.SetVisible(Position{cx, y2})
 					}
 				}
 				if x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1 {
-					if fov.Inside(x2, y2) && fov.At(x2, y2).blocked {
-						fov.At(x2, y2).SetInFOV()
+					if fov.Inside(Position{x2, y2}) && fov.IsBlocked(Position{x2, y2}) {
+						fov.SetVisible(Position{x2, y2})
 					}
 				}
 			}
@@ -117,19 +166,19 @@ func fovCircularPostProc(fov *GameMap, x0, y0, x1, y1, dx, dy int) {
 //
 // FOVCircular Raycasts out from the vantage in a circle.
 //
-func FOVCircular(fov *GameMap, x, y, r int, walls bool) {
+func FOVCircular(fov *FovMap, x, y, r int, walls bool) {
 	xo := 0
 	yo := 0
 	xmin := 0
 	ymin := 0
-	xmax := fov.MWidth
-	ymax := fov.MHeight
+	xmax := fov.w
+	ymax := fov.h
 	r2 := r * r
 	if r > 0 {
 		xmin = max(0, x-r)
 		ymin = max(0, y-r)
-		xmax = min(fov.MWidth, x+r+1)
-		ymax = min(fov.MHeight, y+r+1)
+		xmax = min(fov.w, x+r+1)
+		ymax = min(fov.h, y+r+1)
 	}
 	xo = xmin
 	yo = ymin

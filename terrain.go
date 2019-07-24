@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"strings"
 )
@@ -52,7 +51,6 @@ func (t *Terrain) Generate(f TerrainGeneratorFunc) Position {
 }
 
 func (t *Terrain) Cell(pos Position) Cell {
-	fmt.Println(pos.idx())
 	return t.Cells[pos.idx()]
 }
 
