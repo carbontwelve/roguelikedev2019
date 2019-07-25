@@ -10,6 +10,7 @@ type turnState int
 
 const (
 	PlayerTurn turnState = iota
+	PlayerDead
 	AiTurn
 )
 
@@ -84,6 +85,8 @@ func (w World) Draw(dt float32) {
 			w.e.font.Draw(entity.char, entity.position.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), entity.color)
 		}
 	}
+
+	rl.DrawText(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), int32(rl.GetScreenWidth()-100), 20, 10, PlayerColour)
 }
 
 func (w *World) Update(dt float32) {
@@ -94,7 +97,8 @@ func (w *World) Update(dt float32) {
 		if target == nil {
 			return false
 		}
-		fmt.Println("You kick the " + target.Name + " in the shins, much to its annoyance!")
+		playerEntity.Fighter.Attack(target)
+		w.turnState = AiTurn
 		return true
 	}
 

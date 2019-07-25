@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"strconv"
@@ -9,10 +10,40 @@ import (
 
 type Fighter struct {
 	MaxHP, HP, Defense, Power int
+	owner                     *Entity
+}
+
+func (f *Fighter) SetOwner(e *Entity) {
+	f.owner = e
 }
 
 func (f *Fighter) TakeDamage(amount int) {
-	f.HP -= amount
+	newHP := f.HP - amount
+	if newHP < 0 {
+		f.HP = 0
+	} else {
+		f.HP = newHP
+	}
+}
+
+func (f *Fighter) Heal(amount int) {
+	newHP := f.HP + amount
+	if newHP > f.MaxHP {
+		f.HP = f.MaxHP
+	} else {
+		f.HP = newHP
+	}
+}
+
+func (f Fighter) Attack(target *Entity) {
+	damage := f.Power - target.Fighter.Defense
+
+	if damage > 0 {
+		target.Fighter.TakeDamage(damage)
+		fmt.Println(fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage))
+	} else {
+		fmt.Println(fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name))
+	}
 }
 
 func NewFighter(MaxHP, Defense, Power int) *Fighter {
@@ -97,7 +128,7 @@ type Entity struct {
 }
 
 func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, a Ai, f *Fighter) *Entity {
-	return &Entity{
+	entity := &Entity{
 		Name:     name,
 		position: pos,
 		char:     char,
@@ -106,6 +137,9 @@ func NewEntity(pos Position, char int, name string, color rl.Color, blocking boo
 		Fighter:  f,
 		Ai:       a,
 	}
+
+	entity.Fighter.SetOwner(entity)
+	return entity
 }
 
 func (e *Entity) Move(dx, dy int) {
