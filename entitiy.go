@@ -142,6 +142,10 @@ func NewEntity(pos Position, char int, name string, color rl.Color, blocking boo
 	return entity
 }
 
+func (e *Entity) HandleTurn(w *World, ev event) {
+
+}
+
 func (e *Entity) Move(dx, dy int) {
 	e.position.X += dx
 	e.position.Y += dy
