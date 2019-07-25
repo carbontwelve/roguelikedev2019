@@ -1,5 +1,10 @@
 package main
 
+import (
+	"image"
+	"math"
+)
+
 /**
  * This source code originated from the ROG project and is
  * Licensed BSD 2-clause. I have made modifications in order to make
@@ -31,6 +36,7 @@ package main
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @see https://github.com/ajhager/rog/blob/master/fov.go
+ * @see https://github.com/ajhager/rog/blob/master/line.go
  */
 
 type FovMap struct {
@@ -102,6 +108,45 @@ func min(a, b int) int {
 	return b
 }
 
+// Line returns the points on the grid that the line would pass through.
+func fovLine(x0, y0, x1, y1 int) []image.Point {
+	dx := int(math.Abs(float64(x1 - x0)))
+	dy := int(math.Abs(float64(y1 - y0)))
+	sx := 0
+	sy := 0
+	if x0 < x1 {
+		sx = 1
+	} else {
+		sx = -1
+	}
+
+	if y0 < y1 {
+		sy = 1
+	} else {
+		sy = -1
+	}
+
+	err := dx - dy
+
+	ps := make([]image.Point, 0)
+	for {
+		ps = append(ps, image.Pt(x0, y0))
+		if x0 == x1 && y0 == y1 {
+			break
+		}
+		e2 := err * 2
+		if e2 > -dy {
+			err -= dy
+			x0 += sx
+		}
+		if e2 < dx {
+			err += dx
+			y0 += sy
+		}
+	}
+	return ps
+}
+
 // Circular Raycasting
 func fovCircularCastRay(fov *FovMap, xo, yo, xd, yd, r2 int, walls bool) {
 	curx := xo
@@ -112,7 +157,7 @@ func fovCircularCastRay(fov *FovMap, xo, yo, xd, yd, r2 int, walls bool) {
 		in = true
 		fov.SetVisible(Position{curx, cury})
 	}
-	for _, p := range Line(xo, yo, xd, yd) {
+	for _, p := range fovLine(xo, yo, xd, yd) {
 		curx = p.X
 		cury = p.Y
 		if r2 > 0 {
