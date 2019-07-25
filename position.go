@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gen2brain/raylib-go/raylib"
+import (
+	"github.com/gen2brain/raylib-go/raylib"
+	"math"
+)
 
 //
 // @todo make this configurable?
@@ -54,4 +57,17 @@ func (pos Position) W() Position {
 
 func (pos Position) Vector2(expX, expY int) rl.Vector2 {
 	return rl.Vector2{X: float32(pos.X * expX), Y: float32(pos.Y * expY)}
+}
+
+func (pos Position) Same(p Position) bool {
+	return p.X == pos.X && p.Y == pos.Y
+}
+
+func (pos Position) Distance(to Position) int {
+	deltaX := int(math.Abs(float64(to.X - pos.X)))
+	deltaY := int(math.Abs(float64(to.Y - pos.Y)))
+	if deltaX > deltaY {
+		return deltaX
+	}
+	return deltaY
 }
