@@ -92,7 +92,7 @@ func NewFovMap(w, h int) *FovMap {
 // FOVAlgo takes a FOVMap x,y vantage, radius of the view, whether to include
 // walls and then marks in the map which cells are viewable.
 //
-type FOVAlgo func(*GameMap, int, int, int, bool)
+type FOVAlgo func(*FovMap, int, int, int, bool)
 
 func max(a, b int) int {
 	if a > b {

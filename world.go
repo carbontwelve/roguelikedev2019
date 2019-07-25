@@ -22,6 +22,7 @@ type World struct {
 	seed         int64
 	Version      string
 	FOVRecompute bool
+	FOVAlgo      FOVAlgo
 	turnState    turnState
 }
 
@@ -34,6 +35,7 @@ func NewWorld(e *Engine) *World {
 		seed:         time.Now().Unix(), //@todo fill this from user input....
 		Version:      Version,
 		FOVRecompute: true,
+		FOVAlgo:      FOVCircular,
 		turnState:    PlayerTurn,
 	}
 
@@ -130,7 +132,7 @@ func (w *World) Update(dt float32) {
 	if w.FOVRecompute == true {
 		w.Terrain.SetExplored(playerEntity.position)
 		w.FovMap.ResetVisibility()
-		FOVCircular(w.FovMap, playerEntity.position.X, playerEntity.position.Y, 10, true)
+		w.FOVAlgo(w.FovMap, playerEntity.position.X, playerEntity.position.Y, 10, true)
 
 		for _, idx := range w.FovMap.visibleCache {
 			w.Terrain.SetExplored(idxtopos(idx))
