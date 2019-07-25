@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 /**
  * Some of the event code in this file originated from the game boohu
  * and is licensed ISC.
@@ -87,6 +89,19 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
+		fmt.Println("PlayerTurn")
+
+		// Handle input until input happens
+
+		// ...
+
+		// then process input
+
+		// ...
+
+		// then renew event
+		// @see https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L447
+		sev.Renew(w, 10)
 
 	}
 }
@@ -114,6 +129,9 @@ func (mev *monsterEvent) Action(w *World) {
 		//if mons.Exists() {
 		//	mons.HandleTurn(g, mev)
 		//}
+
+		fmt.Println("MonsterTurn")
+		mev.Renew(w, 10)
 	}
 }
 func (mev *monsterEvent) Renew(w *World, delay int) {

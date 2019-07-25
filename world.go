@@ -13,8 +13,10 @@ type World struct {
 	FovMap       *FovMap
 	Entities     *Entities
 	Events       *eventQueue
+	Ev           event
 	EventIndex   int
 	Depth        int
+	Turn         int
 	seed         int64
 	Version      string
 	FOVRecompute bool
@@ -123,6 +125,10 @@ func (w World) Draw(dt float32) {
 func (w *World) Update(dt float32) {
 	playerEntity := w.Entities.Get("player")
 
+	if playerEntity.Fighter.HP == 0 {
+		// @todo death
+	}
+
 	//attackTarget := func(at Position) bool {
 	//	target := w.Entities.GetBlockingAtPosition(at)
 	//	if target == nil {
@@ -169,6 +175,15 @@ func (w *World) Update(dt float32) {
 
 		w.FOVRecompute = false
 	}
+
+	if w.Events.Len() == 0 {
+		return // @todo game should quit?
+	}
+
+	ev := w.PopIEvent().Event
+	w.Turn = ev.Rank()
+	w.Ev = ev
+	ev.Action(w)
 }
 
 func (w World) Save(filename string) error {
