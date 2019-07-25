@@ -10,7 +10,7 @@ type LobbyState struct {
 
 func NewLobbyState(e *Engine) *LobbyState {
 	s := &LobbyState{
-		State: State{e: e},
+		State: State{e: e, Quit: false},
 	}
 
 	return s

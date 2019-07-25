@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-var Version string = "v0.1"
+var Version = "v0.1"
 
 func main() {
 	// Setup
@@ -15,7 +15,7 @@ func main() {
 	screenHeight := int32(450)
 
 	rl.InitWindow(screenWidth, screenHeight, "/r/roguelikedev 2019")
-	rl.SetTargetFPS(15)
+	rl.SetTargetFPS(60)
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := newEngine()
@@ -43,6 +43,10 @@ func main() {
 
 		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, PlayerColour)
 		rl.EndDrawing()
+
+		if state.ShouldQuit() {
+			break
+		}
 	}
 
 	// Free resources & Exit

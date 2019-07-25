@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 /**
  * Some of the event code in this file originated from the game boohu
@@ -89,9 +91,52 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
-		fmt.Println("PlayerTurn")
+		// fmt.Println("PlayerTurn")
+		playerEntity := w.Entities.Get("player")
 
 		// Handle input until input happens
+
+		attackTarget := func(at Position) bool {
+			target := w.Entities.GetBlockingAtPosition(at)
+			if target == nil {
+				return false
+			}
+			playerEntity.Fighter.Attack(target)
+			return true
+		}
+
+		renew := 10
+
+		if rl.IsKeyDown(rl.KeyUp) && w.Terrain.Cell(playerEntity.position.N()).T == FreeCell && !attackTarget(playerEntity.position.N()) {
+			playerEntity.Move(0, -1)
+			w.FOVRecompute = true
+
+		} else if rl.IsKeyDown(rl.KeyDown) && w.Terrain.Cell(playerEntity.position.S()).T == FreeCell && !attackTarget(playerEntity.position.S()) {
+			playerEntity.Move(0, 1)
+			w.FOVRecompute = true
+
+		} else if rl.IsKeyDown(rl.KeyLeft) && w.Terrain.Cell(playerEntity.position.W()).T == FreeCell && !attackTarget(playerEntity.position.W()) {
+			playerEntity.Move(-1, 0)
+			w.FOVRecompute = true
+
+		} else if rl.IsKeyDown(rl.KeyRight) && w.Terrain.Cell(playerEntity.position.E()).T == FreeCell && !attackTarget(playerEntity.position.E()) {
+			playerEntity.Move(1, 0)
+			w.FOVRecompute = true
+
+		} else if rl.IsKeyDown(rl.KeySpace) {
+			w.e.ChangeState(NewWorld(w.e))
+		} else {
+			renew = 0
+		}
+
+		// 1. HandlePlayerTurn(sev)
+		// 2. Loop until input
+		// 2.a ui.DrawDungeonView(NormalMode)
+		// 2.b ui.PlayerTurnEvent(ev)
+		// 2.c ui.HandleKeyAction
+		// 2.d ui.HandleKey (WASD) -> MovePlayer
+		// 3 MovePlayer
+		// 4 Renew
 
 		// ...
 
@@ -101,7 +146,7 @@ func (sev *simpleEvent) Action(w *World) {
 
 		// then renew event
 		// @see https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L447
-		sev.Renew(w, 10)
+		sev.Renew(w, renew)
 
 	}
 }
@@ -130,7 +175,11 @@ func (mev *monsterEvent) Action(w *World) {
 		//	mons.HandleTurn(g, mev)
 		//}
 
-		fmt.Println("MonsterTurn")
+		e := w.Entities.Get(mev.NMons)
+
+		e.Ai.Tick(e, w.Entities, *w.Terrain, *w.FovMap)
+
+		//fmt.Println("MonsterTurn")
 		mev.Renew(w, 10)
 	}
 }

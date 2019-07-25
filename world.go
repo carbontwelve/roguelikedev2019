@@ -57,7 +57,7 @@ func (w *World) InitWorld() {
 
 func NewWorld(e *Engine) *World {
 	world := &World{
-		State:        State{e: e},
+		State:        State{e: e, Quit: false},
 		Terrain:      NewTerrain(DungeonWidth, DungeonHeight),
 		FovMap:       NewFovMap(DungeonWidth, DungeonHeight),
 		Entities:     &Entities{Entities: make(map[string]*Entity)},
@@ -129,40 +129,15 @@ func (w *World) Update(dt float32) {
 		// @todo death
 	}
 
-	//attackTarget := func(at Position) bool {
-	//	target := w.Entities.GetBlockingAtPosition(at)
-	//	if target == nil {
-	//		return false
-	//	}
-	//	playerEntity.Fighter.Attack(target)
-	//	// w.turnState = AiTurn
-	//	return true
-	//}
+	if w.Events.Len() == 0 {
+		w.Quit = true
+		return
+	}
 
-	//if w.turnState == PlayerTurn {
-	//	if rl.IsKeyDown(rl.KeyUp) && w.Terrain.Cell(playerEntity.position.N()).T == FreeCell && !attackTarget(playerEntity.position.N()) {
-	//		playerEntity.Move(0, -1)
-	//		w.FOVRecompute = true
-	//		w.turnState = AiTurn
-	//	} else if rl.IsKeyDown(rl.KeyDown) && w.Terrain.Cell(playerEntity.position.S()).T == FreeCell && !attackTarget(playerEntity.position.S()) {
-	//		playerEntity.Move(0, 1)
-	//		w.FOVRecompute = true
-	//		w.turnState = AiTurn
-	//	} else if rl.IsKeyDown(rl.KeyLeft) && w.Terrain.Cell(playerEntity.position.W()).T == FreeCell && !attackTarget(playerEntity.position.W()) {
-	//		playerEntity.Move(-1, 0)
-	//		w.FOVRecompute = true
-	//		w.turnState = AiTurn
-	//	} else if rl.IsKeyDown(rl.KeyRight) && w.Terrain.Cell(playerEntity.position.E()).T == FreeCell && !attackTarget(playerEntity.position.E()) {
-	//		playerEntity.Move(1, 0)
-	//		w.FOVRecompute = true
-	//		w.turnState = AiTurn
-	//	} else if rl.IsKeyDown(rl.KeySpace) {
-	//		w.e.ChangeState(NewWorld(w.e))
-	//	}
-	//} else if w.turnState == AiTurn {
-	//	w.Entities.TickAi(*w.Terrain, *w.FovMap)
-	//	w.turnState = PlayerTurn
-	//}
+	ev := w.PopIEvent().Event
+	w.Turn = ev.Rank()
+	w.Ev = ev
+	ev.Action(w)
 
 	if w.FOVRecompute == true {
 		w.Terrain.SetExplored(playerEntity.position)
@@ -175,15 +150,6 @@ func (w *World) Update(dt float32) {
 
 		w.FOVRecompute = false
 	}
-
-	if w.Events.Len() == 0 {
-		return // @todo game should quit?
-	}
-
-	ev := w.PopIEvent().Event
-	w.Turn = ev.Rank()
-	w.Ev = ev
-	ev.Action(w)
 }
 
 func (w World) Save(filename string) error {

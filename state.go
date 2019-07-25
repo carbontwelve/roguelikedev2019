@@ -6,10 +6,12 @@ type GameState interface {
 	GetName() string
 	Save(filename string) error
 	Load(filename string) error
+	ShouldQuit() bool
 }
 
 type State struct {
-	e *Engine
+	e    *Engine
+	Quit bool
 }
 
 //
@@ -24,4 +26,8 @@ func (s State) Save(filename string) error {
 //
 func (s *State) Load(filename string) error {
 	return nil
+}
+
+func (s State) ShouldQuit() bool {
+	return s.Quit
 }
