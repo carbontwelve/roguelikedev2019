@@ -11,6 +11,10 @@ type Fighter struct {
 	MaxHP, HP, Defense, Power int
 }
 
+func (f *Fighter) TakeDamage(amount int) {
+	f.HP -= amount
+}
+
 func NewFighter(MaxHP, Defense, Power int) *Fighter {
 	return &Fighter{MaxHP: MaxHP, HP: MaxHP, Defense: Defense, Power: Power}
 }
