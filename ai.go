@@ -17,12 +17,12 @@ type SimpleAi struct{}
 func (a SimpleAi) Tick(self *Entity, entities *Entities, terrain Terrain, fov FovMap) {
 	// fmt.Println ("The " + self.Name + " ponders the meaning of its existence.")
 
-	player := entities.Get("player")
+	target := entities.Get("player")
 
 	if fov.IsVisible(self.position) {
-		if self.position.Distance(player.position) >= 2 {
-			self.MoveTowards(player.position, *entities, terrain)
-		} else if player.Fighter.HP > 0 {
+		if self.position.Distance(target.position) >= 2 {
+			self.MoveTowards(target.position, *entities, terrain)
+		} else if target.Fighter.HP > 0 {
 			fmt.Println("The " + self.Name + " insults you")
 		}
 	}
