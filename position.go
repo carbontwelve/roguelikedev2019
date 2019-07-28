@@ -39,6 +39,10 @@ func (pos Position) valid(w, h int) bool {
 	return pos.Y >= 0 && pos.Y < h && pos.X >= 0 && pos.X < w
 }
 
+func (pos Position) Zero() bool {
+	return pos.X == 0 && pos.Y == 0
+}
+
 func (pos Position) N() Position {
 	return Position{pos.X, pos.Y - 1}
 }

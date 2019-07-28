@@ -95,12 +95,6 @@ func (e Entities) GetBlockingAtPosition(pos Position) *Entity {
 	return nil
 }
 
-func (e *Entities) TickAi(t Terrain, f FovMap) {
-	for _, entity := range e.Entities {
-		entity.Ai.Tick(entity, e, t, f)
-	}
-}
-
 func (e *Entities) Append(v *Entity) {
 	k := strings.Builder{}
 	k.WriteString("entity-")
@@ -117,38 +111,53 @@ func (e Entities) Delete(k string) {
 	delete(e.Entities, k)
 }
 
+//func MonsterAction (e *Entity, w *World, ev event)
+
 type Entity struct {
-	Ai       Ai
-	Fighter  *Fighter
-	Name     string
-	position Position
-	char     int
-	color    rl.Color
-	blocks   bool
+	Brain              Brain
+	Fighter            *Fighter
+	Name               string
+	Exists             bool
+	position           Position
+	char               int
+	color              rl.Color
+	blocks             bool
+	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, a Ai, f *Fighter) *Entity {
+func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter) *Entity {
 	entity := &Entity{
 		Name:     name,
+		Exists:   true,
 		position: pos,
 		char:     char,
 		color:    color,
 		blocks:   blocking,
 		Fighter:  f,
-		Ai:       a,
+		Brain:    b,
 	}
 
 	entity.Fighter.SetOwner(entity)
+	entity.Brain.SetOwner(entity)
 	return entity
 }
 
 func (e *Entity) HandleTurn(w *World, ev event) {
-
+	e.Brain.HandleTurn(w, ev)
 }
 
 func (e *Entity) Move(dx, dy int) {
 	e.position.X += dx
 	e.position.Y += dy
+}
+
+func (e *Entity) MoveTo(pos Position) {
+	e.position.X = pos.X
+	e.position.Y = pos.Y
+}
+
+func (e Entity) NextMove(dx, dy int) Position {
+	return Position{e.position.X + dx, e.position.Y + dy}
 }
 
 func (e *Entity) MoveTowards(pos Position, entities Entities, terrain Terrain) {

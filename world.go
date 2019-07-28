@@ -9,6 +9,7 @@ import (
 
 type World struct {
 	State
+	NextTurnMove Position
 	Terrain      *Terrain
 	FovMap       *FovMap
 	Entities     *Entities
@@ -32,7 +33,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", PlayerColour, true, NullAi{}, NewFighter(30, 2, 5)))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", PlayerColour, true, &PlayerBrain{}, NewFighter(30, 2, 5)))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -57,6 +58,7 @@ func (w *World) InitWorld() {
 
 func NewWorld(e *Engine) *World {
 	world := &World{
+		NextTurnMove: Position{0, 0},
 		State:        State{e: e, Quit: false},
 		Terrain:      NewTerrain(DungeonWidth, DungeonHeight),
 		FovMap:       NewFovMap(DungeonWidth, DungeonHeight),
@@ -134,10 +136,25 @@ func (w *World) Update(dt float32) {
 		return
 	}
 
+	if rl.IsKeyDown(rl.KeyUp) {
+		w.NextTurnMove = playerEntity.NextMove(0, -1)
+	} else if rl.IsKeyDown(rl.KeyDown) {
+		w.NextTurnMove = playerEntity.NextMove(0, 1)
+	} else if rl.IsKeyDown(rl.KeyLeft) {
+		w.NextTurnMove = playerEntity.NextMove(-1, 0)
+	} else if rl.IsKeyDown(rl.KeyRight) {
+		w.NextTurnMove = playerEntity.NextMove(1, 0)
+	} else if rl.IsKeyPressed(rl.KeySpace) {
+		w.e.ChangeState(NewWorld(w.e))
+	}
+
 	ev := w.PopIEvent().Event
 	w.Turn = ev.Rank()
 	w.Ev = ev
 	ev.Action(w)
+
+	// WaitTurn?
+	// https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L207
 
 	if w.FOVRecompute == true {
 		w.Terrain.SetExplored(playerEntity.position)

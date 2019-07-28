@@ -1,27 +1,57 @@
 package main
 
-type Ai interface {
-	Tick(self *Entity, entities *Entities, terrain Terrain, fov FovMap)
+type Brain interface {
+	HandleTurn(w *World, ev event)
+	SetOwner(e *Entity)
 }
 
-type NullAi struct{}
-
-func (n NullAi) Tick(self *Entity, entities *Entities, terrain Terrain, fov FovMap) {
-	// NOP
+type HindBrain struct {
+	owner *Entity
 }
 
-type SimpleAi struct{}
+func (b *HindBrain) SetOwner(e *Entity) {
+	b.owner = e
+}
 
-func (a SimpleAi) Tick(self *Entity, entities *Entities, terrain Terrain, fov FovMap) {
-	// fmt.Println ("The " + self.Name + " ponders the meaning of its existence.")
+type PlayerBrain struct {
+	HindBrain
+}
 
-	target := entities.Get("player")
+func (b PlayerBrain) HandleTurn(w *World, ev event) {
+	at := w.NextTurnMove
 
-	if fov.IsVisible(self.position) {
-		if self.position.Distance(target.position) >= 2 {
-			self.MoveTowards(target.position, *entities, terrain)
+	if at.Zero() == false && w.Terrain.Cell(at).T == FreeCell {
+		target := w.Entities.GetBlockingAtPosition(at)
+		if target != nil {
+			// Player is moving and destination is blocked by Entity
+			// @todo refactor for items?
+			// @todo some entities may block but not be attackable?
+			b.owner.Fighter.Attack(target)
+		} else {
+			// Player is moving and destination is unblocked by terrain lets move
+			// to the destination position
+			b.owner.MoveTo(at)
+		}
+		w.FOVRecompute = true
+		w.NextTurnMove = Position{0, 0}
+	}
+
+	ev.Renew(w, 10)
+}
+
+type MonsterBrain struct {
+	HindBrain
+}
+
+func (b MonsterBrain) HandleTurn(w *World, ev event) {
+	target := w.Entities.Get("player")
+	if w.FovMap.IsVisible(b.owner.position) {
+		if b.owner.position.Distance(target.position) >= 2 {
+			b.owner.MoveTowards(target.position, *w.Entities, *w.Terrain)
 		} else if target.Fighter.HP > 0 {
-			self.Fighter.Attack(target)
+			b.owner.Fighter.Attack(target)
 		}
 	}
+
+	ev.Renew(w, 10)
 }

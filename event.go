@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -91,43 +92,42 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
-		// fmt.Println("PlayerTurn")
+		rl.DrawText("Turn: Player", int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
 		playerEntity := w.Entities.Get("player")
+		playerEntity.Brain.HandleTurn(w, sev)
 
 		// Handle input until input happens
 
-		attackTarget := func(at Position) bool {
-			target := w.Entities.GetBlockingAtPosition(at)
-			if target == nil {
-				return false
-			}
-			playerEntity.Fighter.Attack(target)
-			return true
-		}
+		//attackTarget := func(at Position) bool {
+		//	target := w.Entities.GetBlockingAtPosition(at)
+		//	if target == nil {
+		//		return false
+		//	}
+		//	playerEntity.Fighter.Attack(target)
+		//	return true
+		//}
 
-		renew := 10
+		//renew := 10
 
-		if rl.IsKeyDown(rl.KeyUp) && w.Terrain.Cell(playerEntity.position.N()).T == FreeCell && !attackTarget(playerEntity.position.N()) {
-			playerEntity.Move(0, -1)
-			w.FOVRecompute = true
-
-		} else if rl.IsKeyDown(rl.KeyDown) && w.Terrain.Cell(playerEntity.position.S()).T == FreeCell && !attackTarget(playerEntity.position.S()) {
-			playerEntity.Move(0, 1)
-			w.FOVRecompute = true
-
-		} else if rl.IsKeyDown(rl.KeyLeft) && w.Terrain.Cell(playerEntity.position.W()).T == FreeCell && !attackTarget(playerEntity.position.W()) {
-			playerEntity.Move(-1, 0)
-			w.FOVRecompute = true
-
-		} else if rl.IsKeyDown(rl.KeyRight) && w.Terrain.Cell(playerEntity.position.E()).T == FreeCell && !attackTarget(playerEntity.position.E()) {
-			playerEntity.Move(1, 0)
-			w.FOVRecompute = true
-
-		} else if rl.IsKeyDown(rl.KeySpace) {
-			w.e.ChangeState(NewWorld(w.e))
-		} else {
-			renew = 0
-		}
+		//if rl.IsKeyDown(rl.KeyUp) && w.Terrain.Cell(playerEntity.position.N()).T == FreeCell && !attackTarget(playerEntity.position.N()) {
+		//	playerEntity.Move(0, -1)
+		//	w.FOVRecompute = true
+		//
+		//} else if rl.IsKeyDown(rl.KeyDown) && w.Terrain.Cell(playerEntity.position.S()).T == FreeCell && !attackTarget(playerEntity.position.S()) {
+		//	playerEntity.Move(0, 1)
+		//	w.FOVRecompute = true
+		//
+		//} else if rl.IsKeyDown(rl.KeyLeft) && w.Terrain.Cell(playerEntity.position.W()).T == FreeCell && !attackTarget(playerEntity.position.W()) {
+		//	playerEntity.Move(-1, 0)
+		//	w.FOVRecompute = true
+		//
+		//} else if rl.IsKeyDown(rl.KeyRight) && w.Terrain.Cell(playerEntity.position.E()).T == FreeCell && !attackTarget(playerEntity.position.E()) {
+		//	playerEntity.Move(1, 0)
+		//	w.FOVRecompute = true
+		//
+		//} else if rl.IsKeyPressed(rl.KeySpace) {
+		//	w.e.ChangeState(NewWorld(w.e))
+		//}
 
 		// 1. HandlePlayerTurn(sev)
 		// 2. Loop until input
@@ -146,7 +146,7 @@ func (sev *simpleEvent) Action(w *World) {
 
 		// then renew event
 		// @see https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L447
-		sev.Renew(w, renew)
+		//sev.Renew(w, renew)
 
 	}
 }
@@ -174,13 +174,12 @@ func (mev *monsterEvent) Action(w *World) {
 		//if mons.Exists() {
 		//	mons.HandleTurn(g, mev)
 		//}
-
 		e := w.Entities.Get(mev.NMons)
+		if e.Exists {
+			rl.DrawText(fmt.Sprintf("Turn: %s", mev.NMons), int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
+			e.Brain.HandleTurn(w, mev)
+		}
 
-		e.Ai.Tick(e, w.Entities, *w.Terrain, *w.FovMap)
-
-		//fmt.Println("MonsterTurn")
-		mev.Renew(w, 10)
 	}
 }
 func (mev *monsterEvent) Renew(w *World, delay int) {
