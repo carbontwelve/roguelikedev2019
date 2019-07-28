@@ -36,6 +36,7 @@ func (b PlayerBrain) HandleTurn(w *World, ev event) {
 		w.NextTurnMove = Position{0, 0}
 	}
 
+	// @see https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L447
 	ev.Renew(w, 10)
 }
 

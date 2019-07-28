@@ -148,10 +148,15 @@ func (w *World) Update(dt float32) {
 		w.e.ChangeState(NewWorld(w.e))
 	}
 
-	ev := w.PopIEvent().Event
-	w.Turn = ev.Rank()
-	w.Ev = ev
-	ev.Action(w)
+	// Only run the turn stack once the player has had their turn.
+	// This effectively waits for the player to take their turn
+	// and then executes all other turns in the stack.
+	if !w.NextTurnMove.Zero() {
+		ev := w.PopIEvent().Event
+		w.Turn = ev.Rank()
+		w.Ev = ev
+		ev.Action(w)
+	}
 
 	// WaitTurn?
 	// https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L207
