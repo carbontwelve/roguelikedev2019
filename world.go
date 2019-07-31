@@ -136,16 +136,27 @@ func (w *World) Update(dt float32) {
 		return
 	}
 
+	dx := 0
+	dy := 0
+
 	if rl.IsKeyDown(rl.KeyUp) {
-		w.NextTurnMove = playerEntity.NextMove(0, -1)
+		dy = -1
 	} else if rl.IsKeyDown(rl.KeyDown) {
-		w.NextTurnMove = playerEntity.NextMove(0, 1)
-	} else if rl.IsKeyDown(rl.KeyLeft) {
-		w.NextTurnMove = playerEntity.NextMove(-1, 0)
+		dy = 1
+	}
+
+	if rl.IsKeyDown(rl.KeyLeft) {
+		dx = -1
 	} else if rl.IsKeyDown(rl.KeyRight) {
-		w.NextTurnMove = playerEntity.NextMove(1, 0)
-	} else if rl.IsKeyPressed(rl.KeySpace) {
+		dx = 1
+	}
+
+	if rl.IsKeyPressed(rl.KeySpace) {
 		w.e.ChangeState(NewWorld(w.e))
+	}
+
+	if dx != 0 || dy != 0 {
+		w.NextTurnMove = playerEntity.NextMove(dx, dy)
 	}
 
 	// Only run the turn stack once the player has had their turn.
