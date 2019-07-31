@@ -117,12 +117,8 @@ func (mev *monsterEvent) Rank() int {
 func (mev *monsterEvent) Action(w *World) {
 	switch mev.EAction {
 	case MonsterTurn:
-		//mons := g.Monsters[mev.NMons]
-		//if mons.Exists() {
-		//	mons.HandleTurn(g, mev)
-		//}
 		e := w.Entities.Get(mev.NMons)
-		if e.Exists {
+		if e.Exists() {
 			rl.DrawText(fmt.Sprintf("Turn: %s", mev.NMons), int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
 			e.Brain.HandleTurn(w, mev)
 		}

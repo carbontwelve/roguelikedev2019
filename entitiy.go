@@ -44,6 +44,10 @@ func (f Fighter) Attack(target *Entity) {
 	} else {
 		fmt.Println(fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name))
 	}
+
+	if target.Fighter.HP <= 0 {
+		fmt.Println(fmt.Sprintf("%s was killed by %s.", target.Name, f.owner.Name))
+	}
 }
 
 func NewFighter(MaxHP, Defense, Power int) *Fighter {
@@ -117,7 +121,6 @@ type Entity struct {
 	Brain              Brain
 	Fighter            *Fighter
 	Name               string
-	Exists             bool
 	position           Position
 	char               int
 	color              rl.Color
@@ -128,7 +131,6 @@ type Entity struct {
 func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter) *Entity {
 	entity := &Entity{
 		Name:     name,
-		Exists:   true,
 		position: pos,
 		char:     char,
 		color:    color,
@@ -140,6 +142,10 @@ func NewEntity(pos Position, char int, name string, color rl.Color, blocking boo
 	entity.Fighter.SetOwner(entity)
 	entity.Brain.SetOwner(entity)
 	return entity
+}
+
+func (e Entity) Exists() bool {
+	return e.Fighter.HP > 0
 }
 
 func (e *Entity) HandleTurn(w *World, ev event) {

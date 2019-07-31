@@ -54,5 +54,7 @@ func (b MonsterBrain) HandleTurn(w *World, ev event) {
 		}
 	}
 
-	ev.Renew(w, 10)
+	if b.owner.Exists() {
+		ev.Renew(w, 10)
+	}
 }
