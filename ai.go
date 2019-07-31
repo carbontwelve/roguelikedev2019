@@ -20,19 +20,21 @@ type PlayerBrain struct {
 func (b PlayerBrain) HandleTurn(w *World, ev event) {
 	at := w.NextTurnMove
 
-	if at.Zero() == false && w.Terrain.Cell(at).T == FreeCell {
-		target := w.Entities.GetBlockingAtPosition(at)
-		if target != nil {
-			// Player is moving and destination is blocked by Entity
-			// @todo refactor for items?
-			// @todo some entities may block but not be attackable?
-			b.owner.Fighter.Attack(target)
-		} else {
-			// Player is moving and destination is unblocked by terrain lets move
-			// to the destination position
-			b.owner.MoveTo(at)
+	if at.Zero() == false {
+		if w.Terrain.Cell(at).T == FreeCell {
+			target := w.Entities.GetBlockingAtPosition(at)
+			if target != nil {
+				// Player is moving and destination is blocked by Entity
+				// @todo refactor for items?
+				// @todo some entities may block but not be attackable?
+				b.owner.Fighter.Attack(target)
+			} else {
+				// Player is moving and destination is unblocked by terrain lets move
+				// to the destination position
+				b.owner.MoveTo(at)
+			}
+			w.FOVRecompute = true
 		}
-		w.FOVRecompute = true
 		w.NextTurnMove = Position{0, 0}
 	}
 
