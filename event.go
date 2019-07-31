@@ -102,6 +102,7 @@ type monsterAction int
 
 const (
 	MonsterTurn monsterAction = iota
+	MonsterDeath
 )
 
 type monsterEvent struct {
@@ -121,8 +122,15 @@ func (mev *monsterEvent) Action(w *World) {
 		if e.Exists() {
 			rl.DrawText(fmt.Sprintf("Turn: %s", mev.NMons), int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
 			e.Brain.HandleTurn(w, mev)
+		} else {
+			// We have died
+			w.PushEvent(&monsterEvent{ERank: 0, EAction: MonsterDeath, NMons: mev.NMons})
 		}
-
+	case MonsterDeath:
+		e := w.Entities.Get(mev.NMons)
+		e.Name = "Dead " + e.Name
+		e.color = rl.Red
+		e.char = '%'
 	}
 }
 func (mev *monsterEvent) Renew(w *World, delay int) {

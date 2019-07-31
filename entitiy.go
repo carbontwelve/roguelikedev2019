@@ -45,9 +45,9 @@ func (f Fighter) Attack(target *Entity) {
 		fmt.Println(fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name))
 	}
 
-	if target.Fighter.HP <= 0 {
-		fmt.Println(fmt.Sprintf("%s was killed by %s.", target.Name, f.owner.Name))
-	}
+	//if target.Fighter.HP <= 0 {
+	//	fmt.Println(fmt.Sprintf("%s was killed by %s.", target.Name, f.owner.Name))
+	//}
 }
 
 func NewFighter(MaxHP, Defense, Power int) *Fighter {
