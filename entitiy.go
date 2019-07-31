@@ -92,7 +92,7 @@ func (e Entities) BlockingAtPosition(pos Position) bool {
 
 func (e Entities) GetBlockingAtPosition(pos Position) *Entity {
 	for _, entity := range e.Entities {
-		if entity.position.Same(pos) && entity.blocks == true {
+		if entity.Exists() && entity.position.Same(pos) && entity.blocks == true {
 			return entity
 		}
 	}
