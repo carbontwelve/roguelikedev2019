@@ -122,6 +122,7 @@ func (w World) Draw(dt float32) {
 	}
 
 	rl.DrawText(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), int32(rl.GetScreenWidth()-100), 20, 10, PlayerColour)
+	rl.DrawText(fmt.Sprintf("Turn: %d", w.Turn/10), int32(rl.GetScreenWidth()-100), 40, 10, PlayerColour)
 }
 
 func (w *World) Update(dt float32) {
@@ -136,27 +137,16 @@ func (w *World) Update(dt float32) {
 		return
 	}
 
-	dx := 0
-	dy := 0
-
 	if rl.IsKeyDown(rl.KeyUp) {
-		dy = -1
+		w.NextTurnMove = playerEntity.NextMove(0, -1)
 	} else if rl.IsKeyDown(rl.KeyDown) {
-		dy = 1
-	}
-
-	if rl.IsKeyDown(rl.KeyLeft) {
-		dx = -1
+		w.NextTurnMove = playerEntity.NextMove(0, 1)
+	} else if rl.IsKeyDown(rl.KeyLeft) {
+		w.NextTurnMove = playerEntity.NextMove(-1, 0)
 	} else if rl.IsKeyDown(rl.KeyRight) {
-		dx = 1
-	}
-
-	if rl.IsKeyPressed(rl.KeySpace) {
+		w.NextTurnMove = playerEntity.NextMove(1, 0)
+	} else if rl.IsKeyPressed(rl.KeySpace) {
 		w.e.ChangeState(NewWorld(w.e))
-	}
-
-	if dx != 0 || dy != 0 {
-		w.NextTurnMove = playerEntity.NextMove(dx, dy)
 	}
 
 	// Only run the turn stack once the player has had their turn.
