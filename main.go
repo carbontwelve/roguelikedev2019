@@ -41,7 +41,8 @@ func main() {
 		rl.BeginDrawing()
 		state.Draw(frameTime)
 
-		rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, PlayerColour)
+		//rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, PlayerColour)
+		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, PlayerColour)
 		rl.EndDrawing()
 
 		if state.ShouldQuit() {

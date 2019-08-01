@@ -69,6 +69,7 @@ type simpleAction int
 
 const (
 	PlayerTurn simpleAction = iota
+	HealPlayer
 )
 
 type simpleEvent struct {
@@ -93,8 +94,24 @@ func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
 		rl.DrawText("Turn: Player", int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
+
+		if w.NextTurnMove.Zero() {
+			// If no player input wait
+			sev.Renew(w, 0)
+			return
+		}
+
 		playerEntity := w.Entities.Get("player")
-		playerEntity.Brain.HandleTurn(w, sev)
+
+		if playerEntity.Exists() {
+			playerEntity.Brain.HandleTurn(w, sev)
+		}
+
+	case HealPlayer:
+		playerEntity := w.Entities.Get("player")
+		playerEntity.Fighter.Heal(1)
+		sev.Renew(w, 500)
+		fmt.Println("Turn ", w.Turn/10, " You feel your health improving")
 	}
 }
 
@@ -131,6 +148,7 @@ func (mev *monsterEvent) Action(w *World) {
 		e.Name = "Dead " + e.Name
 		e.color = rl.Red
 		e.char = '%'
+		e.RenderOrder = Corpse
 	}
 }
 func (mev *monsterEvent) Renew(w *World, delay int) {

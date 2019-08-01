@@ -155,7 +155,7 @@ func newFont(filename string, w, h int) *Font {
 }
 
 func (f *Font) decode() {
-	codec := getTcodCodec()
+	codec := getTcodCodec() //@todo implement other codecs
 
 	for i := 0; i < 256; i++ {
 		f.mapAsciiToFont(i, codec[i], 0)

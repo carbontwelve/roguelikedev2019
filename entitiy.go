@@ -4,8 +4,17 @@ import (
 	"fmt"
 	"github.com/gen2brain/raylib-go/raylib"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
+)
+
+type renderOrder int
+
+const (
+	Corpse renderOrder = iota
+	Item
+	Actor
 )
 
 type Fighter struct {
@@ -17,13 +26,43 @@ func (f *Fighter) SetOwner(e *Entity) {
 	f.owner = e
 }
 
-func (f *Fighter) TakeDamage(amount int) {
+type InteractionResult map[string]interface{}
+
+type InteractionResults struct {
+	Results []InteractionResult
+}
+
+func (r *InteractionResults) Push(fr InteractionResult) {
+	r.Results = append(r.Results, fr)
+}
+
+func (r *InteractionResults) Merge(frs InteractionResults) {
+	for _, i := range frs.Results {
+		r.Push(i)
+	}
+}
+
+func NewInteractionResults() InteractionResults {
+	return InteractionResults{Results: make([]InteractionResult, 0)}
+}
+
+func (f *Fighter) TakeDamage(amount int) InteractionResults {
+	ret := NewInteractionResults()
+
 	newHP := f.HP - amount
 	if newHP < 0 {
 		f.HP = 0
 	} else {
 		f.HP = newHP
 	}
+
+	if f.HP == 0 {
+		result := make(InteractionResult)
+		result["death"] = f.owner
+		ret.Push(result)
+	}
+
+	return ret
 }
 
 func (f *Fighter) Heal(amount int) {
@@ -35,19 +74,20 @@ func (f *Fighter) Heal(amount int) {
 	}
 }
 
-func (f Fighter) Attack(target *Entity) {
+func (f Fighter) Attack(target *Entity) InteractionResults {
+	ret := NewInteractionResults()
+	result := make(InteractionResult)
 	damage := f.Power - target.Fighter.Defense
-
 	if damage > 0 {
-		target.Fighter.TakeDamage(damage)
-		fmt.Println(fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage))
+		result["message"] = fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage)
+		ret.Push(result)
+		ret.Merge(target.Fighter.TakeDamage(damage))
 	} else {
-		fmt.Println(fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name))
+		result["message"] = fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name)
+		ret.Push(result)
 	}
 
-	//if target.Fighter.HP <= 0 {
-	//	fmt.Println(fmt.Sprintf("%s was killed by %s.", target.Name, f.owner.Name))
-	//}
+	return ret
 }
 
 func NewFighter(MaxHP, Defense, Power int) *Fighter {
@@ -115,12 +155,47 @@ func (e Entities) Delete(k string) {
 	delete(e.Entities, k)
 }
 
+type RenderOrderEntityList []*Entity
+
+type RenderOrderEntity struct {
+	Key   string
+	Value renderOrder
+}
+
+//
+// There has to be a better way of sorting these, but this works and is
+// quick enough for now.
+//
+func (e Entities) SortedByRenderOrder() RenderOrderEntityList {
+	ero := make(RenderOrderEntityList, len(e.Entities))
+	tmp := make([]RenderOrderEntity, len(e.Entities))
+
+	i := 0
+	for k, v := range e.Entities {
+		tmp[i] = RenderOrderEntity{k, v.RenderOrder}
+		i++
+	}
+
+	sort.Slice(tmp, func(i, j int) bool {
+		return tmp[i].Value < tmp[j].Value
+	})
+
+	i = 0
+	for _, kv := range tmp {
+		ero[i] = e.Entities[kv.Key]
+		i++
+	}
+
+	return ero
+}
+
 //func MonsterAction (e *Entity, w *World, ev event)
 
 type Entity struct {
 	Brain              Brain
 	Fighter            *Fighter
 	Name               string
+	RenderOrder        renderOrder
 	position           Position
 	char               int
 	color              rl.Color
@@ -128,15 +203,16 @@ type Entity struct {
 	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter) *Entity {
+func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder) *Entity {
 	entity := &Entity{
-		Name:     name,
-		position: pos,
-		char:     char,
-		color:    color,
-		blocks:   blocking,
-		Fighter:  f,
-		Brain:    b,
+		Name:        name,
+		position:    pos,
+		char:        char,
+		color:       color,
+		blocks:      blocking,
+		Fighter:     f,
+		Brain:       b,
+		RenderOrder: renderOrder,
 	}
 
 	entity.Fighter.SetOwner(entity)
