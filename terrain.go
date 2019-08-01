@@ -58,9 +58,9 @@ func TutorialTerrainGenerator(t *Terrain, e *Entities, c Config) Position {
 			if !e.FoundAtPosition(location) {
 				var monster *Entity
 				if rand.Intn(100) < 80 {
-					monster = NewEntity(location, 'o', "Orc", rl.Green, true, &MonsterBrain{}, NewFighter(10, 0, 3), Actor)
+					monster = NewEntity(location, 'o', "Orc", rl.Green, true, &MonsterBrain{}, NewFighter(10, 0, 3), RoActor, EtMonster)
 				} else {
-					monster = NewEntity(location, 'T', "Troll", rl.DarkGreen, true, &MonsterBrain{}, NewFighter(16, 1, 4), Actor)
+					monster = NewEntity(location, 'T', "Troll", rl.DarkGreen, true, &MonsterBrain{}, NewFighter(16, 1, 4), RoActor, EtMonster)
 				}
 				e.Append(monster)
 			}

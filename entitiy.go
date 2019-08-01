@@ -12,9 +12,17 @@ import (
 type renderOrder int
 
 const (
-	Corpse renderOrder = iota
-	Item
-	Actor
+	RoCorpse renderOrder = iota
+	RoItem
+	RoActor
+)
+
+type entityType int
+
+const (
+	EtPlayer entityType = iota
+	EtMonster
+	EtItem
 )
 
 type Fighter struct {
@@ -59,6 +67,7 @@ func (f *Fighter) TakeDamage(amount int) InteractionResults {
 	if f.HP == 0 {
 		result := make(InteractionResult)
 		result["death"] = f.owner
+		result["message"] = SimpleMessage{Message: fmt.Sprintf("%s is dead.", f.owner.Name), Colour: rl.Red}
 		ret.Push(result)
 	}
 
@@ -78,12 +87,31 @@ func (f Fighter) Attack(target *Entity) InteractionResults {
 	ret := NewInteractionResults()
 	result := make(InteractionResult)
 	damage := f.Power - target.Fighter.Defense
+
+	var msg string
+
 	if damage > 0 {
-		result["message"] = fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage)
+		if f.owner.Type == EtPlayer {
+			msg = fmt.Sprintf("you attack %s for %d hit points.", target.Name, damage)
+		} else if f.owner.Type == EtMonster {
+			msg = fmt.Sprintf("%s attacks you for %d hit points.", f.owner.Name, damage)
+		} else {
+			msg = fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage)
+		}
+
+		result["message"] = SimpleMessage{Message: msg, Colour: rl.Orange}
 		ret.Push(result)
 		ret.Merge(target.Fighter.TakeDamage(damage))
 	} else {
-		result["message"] = fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name)
+		if f.owner.Type == EtPlayer {
+			msg = fmt.Sprintf("you attack %s and miss, doing no damage.", target.Name)
+		} else if f.owner.Type == EtMonster {
+			msg = fmt.Sprintf("%s lurches at you but does no damage.", f.owner.Name)
+		} else {
+			msg = fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name)
+		}
+
+		result["message"] = SimpleMessage{Message: msg, Colour: rl.Orange}
 		ret.Push(result)
 	}
 
@@ -196,6 +224,7 @@ type Entity struct {
 	Fighter            *Fighter
 	Name               string
 	RenderOrder        renderOrder
+	Type               entityType
 	position           Position
 	char               int
 	color              rl.Color
@@ -203,9 +232,10 @@ type Entity struct {
 	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder) *Entity {
+func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
 	entity := &Entity{
 		Name:        name,
+		Type:        entityType,
 		position:    pos,
 		char:        char,
 		color:       color,

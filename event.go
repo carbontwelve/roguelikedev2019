@@ -111,7 +111,8 @@ func (sev *simpleEvent) Action(w *World) {
 		playerEntity := w.Entities.Get("player")
 		playerEntity.Fighter.Heal(1)
 		sev.Renew(w, 500)
-		fmt.Println("Turn ", w.Turn/10, " You feel your health improving")
+
+		w.AddMessage(SimpleMessage{Message: "You feel your health improving", Colour: rl.Green})
 	}
 }
 
@@ -148,7 +149,7 @@ func (mev *monsterEvent) Action(w *World) {
 		e.Name = "Dead " + e.Name
 		e.color = rl.Red
 		e.char = '%'
-		e.RenderOrder = Corpse
+		e.RenderOrder = RoCorpse
 	}
 }
 func (mev *monsterEvent) Renew(w *World, delay int) {

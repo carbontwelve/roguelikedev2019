@@ -10,6 +10,7 @@ import (
 type World struct {
 	State
 	NextTurnMove Position
+	MessageLog   *MessageLog
 	Terrain      *Terrain
 	FovMap       *FovMap
 	Entities     *Entities
@@ -34,7 +35,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", PlayerColour, true, &PlayerBrain{}, NewFighter(30, 2, 5), Actor))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", PlayerColour, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -71,6 +72,7 @@ func NewWorld(e *Engine) *World {
 		FOVRecompute: true,
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
+		MessageLog:   NewMessageLog(0, DungeonWidth, 5),
 	}
 	world.InitWorld()
 	return world
@@ -124,8 +126,17 @@ func (w World) Draw(dt float32) {
 		}
 	}
 
+	// Draw Message Log
+	for y, msg := range w.MessageLog.Messages {
+		rl.DrawText(fmt.Sprintf("%d: %s", msg.Turn, msg.Message), 10, int32(rl.GetScreenHeight()-10-int(w.MessageLog.Height*10)+(y*10)), 10, msg.Colour)
+	}
+
 	rl.DrawText(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), int32(rl.GetScreenWidth()-100), 20, 10, PlayerColour)
 	rl.DrawText(fmt.Sprintf("Turn: %d", w.Turn/10), int32(rl.GetScreenWidth()-100), 40, 10, PlayerColour)
+}
+
+func (w *World) AddMessage(msg SimpleMessage) {
+	w.MessageLog.AddMessage(Message{Turn: uint(w.Turn / 10), Message: msg.Message, Colour: msg.Colour})
 }
 
 func (w *World) Update(dt float32) {
@@ -164,10 +175,12 @@ func (w *World) Update(dt float32) {
 	// playerEntity.NextMove is invalid (e.g Zero) then the event will
 	// add itself to the top of the queue to be executed indefinitely
 	// until the player gives their input.
-	ev := w.PopIEvent().Event
-	w.Turn = ev.Rank()
-	w.Ev = ev
-	ev.Action(w)
+	if playerEntity.Exists() {
+		ev := w.PopIEvent().Event
+		w.Turn = ev.Rank()
+		w.Ev = ev
+		ev.Action(w)
+	}
 
 	if w.FOVRecompute == true {
 		w.Terrain.SetExplored(playerEntity.position)

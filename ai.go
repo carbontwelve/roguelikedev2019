@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -21,7 +20,8 @@ func (b *HindBrain) SetOwner(e *Entity) {
 func (b HindBrain) HandleInteractionResults(w *World, results InteractionResults) {
 	for _, result := range results.Results {
 		if val, ok := result["message"]; ok {
-			fmt.Println(val.(string))
+			w.AddMessage(val.(SimpleMessage))
+
 		}
 
 		if val, ok := result["death"]; ok {
@@ -29,7 +29,7 @@ func (b HindBrain) HandleInteractionResults(w *World, results InteractionResults
 			e.Name = "remains of " + e.Name
 			e.color = rl.Red
 			e.char = '%'
-			e.RenderOrder = Corpse
+			e.RenderOrder = RoCorpse
 		}
 	}
 }
