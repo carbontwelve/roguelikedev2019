@@ -101,7 +101,7 @@ const (
 
 //
 // The tcod_codec_ comes from https://github.com/libtcod/libtcod/blob/master/src/libtcod/sys_sdl_c.cpp#L165
-// It is the codec for TCOD_FONT_LAYOUT_TCOD and converts from EASCII code-point -> raw tile position.
+// It is the codec for TCOD_FONT_LAYOUT_TCOD and converts from EASCII code-point -> raw tile Position.
 // BSD 3-Clause License
 // Copyright © 2008-2019, Jice and the libtcod contributors. All rights reserved.
 //
@@ -155,7 +155,7 @@ func newFont(filename string, w, h int) *Font {
 }
 
 func (f *Font) decode() {
-	codec := getTcodCodec()
+	codec := getTcodCodec() //@todo implement other codecs
 
 	for i := 0; i < 256; i++ {
 		f.mapAsciiToFont(i, codec[i], 0)

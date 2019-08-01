@@ -6,6 +6,7 @@ type Engine struct {
 	states  *stack
 	sprites *SpriteSheet
 	font    *Font
+	ui      int
 }
 
 func (g *Engine) PushState(state GameState) {
