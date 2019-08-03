@@ -134,14 +134,14 @@ const (
 // If the cell has entered the players FOV then its Explored flag
 // will be set to true.
 //
-type Cell struct {
+type tCell struct {
 	T        cellType
 	Explored bool
 }
 
 type Terrain struct {
 	w, h  int
-	Cells []Cell
+	Cells []tCell
 }
 
 func (t Terrain) SetFOVBlocked(fov *FovMap) {
@@ -163,7 +163,7 @@ func (t *Terrain) Generate(f TerrainGeneratorFunc, e *Entities, c Config) Positi
 	return f(t, e, c)
 }
 
-func (t *Terrain) Cell(pos Position) Cell {
+func (t *Terrain) Cell(pos Position) tCell {
 	return t.Cells[pos.idx()]
 }
 
@@ -220,7 +220,7 @@ func (t Terrain) Inside(pos Position) bool {
 
 func NewTerrain(w, h int) *Terrain {
 	d := &Terrain{w: w, h: h}
-	d.Cells = make([]Cell, h*w)
+	d.Cells = make([]tCell, h*w)
 	d.Fill(FreeCell)
 	return d
 }
