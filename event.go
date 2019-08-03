@@ -93,7 +93,7 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
-		rl.DrawText("Turn: Player", int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
+		w.Ui.Statistics.SetRow("Turn: player", Position{1, 3}, rl.Orange, rl.Black)
 
 		if w.NextTurnMove.Zero() {
 			// If no player input wait
@@ -138,7 +138,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterTurn:
 		e := w.Entities.Get(mev.NMons)
 		if e.Exists() {
-			rl.DrawText(fmt.Sprintf("Turn: %s", mev.NMons), int32(rl.GetScreenWidth()-100), 30, 10, PlayerColour)
+			w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %s", mev.NMons), Position{1, 3}, rl.Orange, rl.Black)
 			e.Brain.HandleTurn(w, mev)
 		} else {
 			// We have died

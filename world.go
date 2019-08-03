@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+type WorldUi struct {
+	MainWindow *Viewport
+	MessageLog *Viewport
+	Statistics *Viewport
+}
+
 type World struct {
 	State
 	NextTurnMove Position
@@ -24,6 +30,7 @@ type World struct {
 	FOVRecompute bool
 	FOVAlgo      FOVAlgo
 	inputDelay   float32
+	Ui           *WorldUi
 }
 
 func (w *World) InitWorld() {
@@ -60,6 +67,15 @@ func (w *World) InitWorld() {
 }
 
 func NewWorld(e *Engine) *World {
+	ui := &WorldUi{
+		MainWindow: NewViewport(DungeonWidth-25, DungeonHeight, 0, 0),
+		MessageLog: NewViewport(DungeonWidth, 6, 0, DungeonHeight-6),
+		Statistics: NewViewport(25, DungeonHeight-6, DungeonWidth-25, 0),
+	}
+
+	ui.MessageLog.SetBordered(true)
+	ui.Statistics.SetBordered(true)
+
 	world := &World{
 		NextTurnMove: Position{0, 0},
 		State:        State{e: e, Quit: false},
@@ -72,7 +88,8 @@ func NewWorld(e *Engine) *World {
 		FOVRecompute: true,
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
-		MessageLog:   NewMessageLog(0, DungeonWidth, 5),
+		MessageLog:   NewMessageLog(0, DungeonWidth, 4),
+		Ui:           ui,
 	}
 	world.InitWorld()
 	return world
@@ -126,13 +143,15 @@ func (w World) Draw(dt float32) {
 		}
 	}
 
-	// Draw Message Log
-	for y, msg := range w.MessageLog.Messages {
-		rl.DrawText(fmt.Sprintf("%d: %s", msg.Turn, msg.Message), 10, int32(rl.GetScreenHeight()-10-int(w.MessageLog.Height*10)+(y*10)), 10, msg.Colour)
+	// Draw Message Log UI
+	for _, c := range w.Ui.MessageLog.cells {
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
 	}
 
-	rl.DrawText(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), int32(rl.GetScreenWidth()-100), 20, 10, PlayerColour)
-	rl.DrawText(fmt.Sprintf("Turn: %d", w.Turn/10), int32(rl.GetScreenWidth()-100), 40, 10, PlayerColour)
+	// Draw Ui.Statistics
+	for _, c := range w.Ui.Statistics.cells {
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
+	}
 }
 
 func (w *World) AddMessage(msg SimpleMessage) {
@@ -182,6 +201,7 @@ func (w *World) Update(dt float32) {
 		ev.Action(w)
 	}
 
+	// Recompute Player FOV if needed
 	if w.FOVRecompute == true {
 		w.Terrain.SetExplored(playerEntity.position)
 		w.FovMap.ResetVisibility()
@@ -192,6 +212,16 @@ func (w *World) Update(dt float32) {
 		}
 
 		w.FOVRecompute = false
+	}
+
+	// Write to Ui.Statistics
+	w.Ui.Statistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), Position{1, 1}, rl.Orange, rl.Black)
+	w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), Position{1, 2}, rl.Orange, rl.Black)
+
+	// Write Messages to Ui.MessageLog
+	for y, msg := range w.MessageLog.Messages {
+		w.Ui.MessageLog.ClearRow(uint(1 + y))
+		w.Ui.MessageLog.SetString(msg.Message, Position{X: 1, Y: 1 + y}, msg.Colour, rl.Black)
 	}
 }
 

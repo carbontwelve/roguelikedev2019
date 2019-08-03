@@ -115,6 +115,11 @@ func (v *Viewport) ClearCol(x uint, r rune) {
 	// ...
 }
 
+func (v *Viewport) SetRow(str string, p Position, fg, bg rl.Color) {
+	v.ClearRow(uint(p.Y))
+	v.SetString(str, p, fg, bg)
+}
+
 func (v *Viewport) SetString(str string, p Position, fg, bg rl.Color) {
 	maxX := uint(p.X + utf8.RuneCountInString(str))
 	if maxX > v.width {
