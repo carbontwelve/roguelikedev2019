@@ -147,7 +147,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterDeath:
 		e := w.Entities.Get(mev.NMons)
 		e.Name = "Dead " + e.Name
-		e.color = rl.Red
+		e.color = ColourBlood
 		e.char = '%'
 		e.RenderOrder = RoCorpse
 	}

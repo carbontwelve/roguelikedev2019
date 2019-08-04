@@ -42,7 +42,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", PlayerColour, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -113,7 +113,7 @@ func (w *World) PopIEvent() iEvent {
 }
 
 func (w World) Draw(dt float32) {
-	rl.ClearBackground(UIBackgroundColour)
+	rl.ClearBackground(ColourBg)
 
 	// Draw Terrain
 	for x := 0; x < w.Terrain.w; x++ {
@@ -123,15 +123,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), LightWallColour)
+					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourWallFOV)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), LightGroundColour)
+					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourFloorFOV)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), DarkWallColour)
+					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourWall)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), DarkGroundColour)
+					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourFloor)
 				}
 			}
 		}
@@ -221,13 +221,13 @@ func (w *World) Update(dt float32) {
 	}
 
 	// Write to Ui.Statistics
-	w.Ui.Statistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), Position{1, 1}, rl.Orange, rl.Black)
-	w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), Position{1, 2}, rl.Orange, rl.Black)
+	w.Ui.Statistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), Position{1, 1}, ColourFg, ColourNC)
+	w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), Position{1, 2}, ColourFg, ColourNC)
 
 	// Write Messages to Ui.MessageLog
 	for y, msg := range w.MessageLog.Messages {
 		w.Ui.MessageLog.ClearRow(uint(1 + y))
-		w.Ui.MessageLog.SetString(msg.Message, Position{X: 1, Y: 1 + y}, msg.Colour, rl.Black)
+		w.Ui.MessageLog.SetString(msg.Message, Position{X: 1, Y: 1 + y}, msg.Colour, ColourNC)
 	}
 }
 

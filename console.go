@@ -83,19 +83,19 @@ func (v *Viewport) DrawBorder() {
 		return
 	}
 	for x := uint(0); x < v.width-1; x++ {
-		v.SetChar(v.border.H, Position{X: int(x), Y: 0}, rl.Orange, rl.Black)
-		v.SetChar(v.border.H, Position{X: int(x), Y: int(v.height - 1)}, rl.Orange, rl.Black)
+		v.SetChar(v.border.H, Position{X: int(x), Y: 0}, ColourUiLines, ColourBg)
+		v.SetChar(v.border.H, Position{X: int(x), Y: int(v.height - 1)}, ColourUiLines, ColourBg)
 	}
 
 	for y := uint(0); y < v.height-1; y++ {
-		v.SetChar(v.border.V, Position{X: 0, Y: int(y)}, rl.Orange, rl.Black)
-		v.SetChar(v.border.V, Position{X: int(v.width - 1), Y: int(y)}, rl.Orange, rl.Black)
+		v.SetChar(v.border.V, Position{X: 0, Y: int(y)}, ColourUiLines, ColourBg)
+		v.SetChar(v.border.V, Position{X: int(v.width - 1), Y: int(y)}, ColourUiLines, ColourBg)
 	}
 
-	v.SetChar(v.border.NE, Position{X: int(v.width - 1), Y: 0}, rl.Orange, rl.Black)
-	v.SetChar(v.border.SE, Position{X: int(v.width - 1), Y: int(v.height - 1)}, rl.Orange, rl.Black)
-	v.SetChar(v.border.SW, Position{X: 0, Y: int(v.height - 1)}, rl.Orange, rl.Black)
-	v.SetChar(v.border.NW, Position{X: 0, Y: 0}, rl.Orange, rl.Black)
+	v.SetChar(v.border.NE, Position{X: int(v.width - 1), Y: 0}, ColourUiLines, ColourBg)
+	v.SetChar(v.border.SE, Position{X: int(v.width - 1), Y: int(v.height - 1)}, ColourUiLines, ColourBg)
+	v.SetChar(v.border.SW, Position{X: 0, Y: int(v.height - 1)}, ColourUiLines, ColourBg)
+	v.SetChar(v.border.NW, Position{X: 0, Y: 0}, ColourUiLines, ColourBg)
 }
 
 func (v *Viewport) SetChar(r int, p Position, fg, bg rl.Color) {

@@ -17,6 +17,8 @@ func main() {
 	rl.InitWindow(screenWidth, screenHeight, "/r/roguelikedev 2019")
 	rl.SetTargetFPS(60)
 
+	LinkColours()
+
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := newEngine()
 
@@ -42,7 +44,7 @@ func main() {
 		state.Draw(frameTime)
 
 		//rl.DrawText(fmt.Sprintf("State: %s | FPS %f | Frame Time: %f", state.GetName(), rl.GetFPS(), frameTime), 20, 20, 10, PlayerColour)
-		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, PlayerColour)
+		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ColourFg)
 		rl.EndDrawing()
 
 		if state.ShouldQuit() {

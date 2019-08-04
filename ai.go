@@ -1,9 +1,5 @@
 package main
 
-import (
-	rl "github.com/gen2brain/raylib-go/raylib"
-)
-
 type Brain interface {
 	HandleTurn(w *World, ev event)
 	SetOwner(e *Entity)
@@ -27,7 +23,7 @@ func (b HindBrain) HandleInteractionResults(w *World, results InteractionResults
 		if val, ok := result["death"]; ok {
 			e := val.(*Entity)
 			e.Name = "remains of " + e.Name
-			e.color = rl.Red
+			e.color = ColourBlood
 			e.char = '%'
 			e.RenderOrder = RoCorpse
 		}
