@@ -68,13 +68,14 @@ func (w *World) InitWorld() {
 
 func NewWorld(e *Engine) *World {
 	ui := &WorldUi{
-		MainWindow: NewViewport(DungeonWidth-25, DungeonHeight, 0, 0),
+		MainWindow: NewViewport(DungeonWidth-24, DungeonHeight-5, 0, 0),
 		MessageLog: NewViewport(DungeonWidth, 6, 0, DungeonHeight-6),
-		Statistics: NewViewport(25, DungeonHeight-6, DungeonWidth-25, 0),
+		Statistics: NewViewport(25, DungeonHeight-5, DungeonWidth-25, 0),
 	}
 
 	ui.MessageLog.SetBordered(true)
 	ui.Statistics.SetBordered(true)
+	// ui.MainWindow.SetBordered(true)
 
 	world := &World{
 		NextTurnMove: Position{0, 0},
@@ -150,6 +151,11 @@ func (w World) Draw(dt float32) {
 
 	// Draw Ui.Statistics
 	for _, c := range w.Ui.Statistics.cells {
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
+	}
+
+	// Draw Ui.MainWindow
+	for _, c := range w.Ui.MainWindow.cells {
 		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
 	}
 }
