@@ -32,6 +32,7 @@ type Viewport struct {
 	width, height uint
 	x, y          uint
 	cells         map[Position]*cCell
+	modified      map[Position]bool
 	bordered      bool
 	border        cCellBorder
 }
@@ -53,6 +54,17 @@ func NewViewport(w, h, x, y uint) *Viewport {
 		}
 	}
 	return vp
+}
+
+func (v Viewport) GetCells() map[Position]*cCell {
+	return v.cells
+}
+
+func (v Viewport) GetUpdatedCells() map[Position]*cCell {
+	// @todo this will return just those cells that are found within the modified hash
+	// it will then reset the modified hash. Used to get only cells updated since last
+	// call. May be useful for speeding up things if needed...
+	return make(map[Position]*cCell)
 }
 
 func (v *Viewport) SetBorder(b cCellBorder) {
