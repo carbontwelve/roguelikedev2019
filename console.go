@@ -5,6 +5,44 @@ import (
 	"unicode/utf8"
 )
 
+type orderedComponent struct {
+	v     *Viewport
+	order int
+}
+
+//
+// A Screen defines an overall drawable area and acts as a container for
+// Viewports. When Viewports are added to the Screen they can be given
+// a render order. This act to allow a form of "layering"
+//
+type Screen struct {
+	width, height uint // In pixels e.g 800x600
+	components    map[string]*orderedComponent
+	drawOrder     []string
+}
+
+func (s *Screen) HandleEvents() {
+	// @todo loop over components and handle any user input per component e.g for buttons
+}
+
+func (s Screen) Draw() {
+	// @todo draw to render interface... this can in future be terminal or graphical
+}
+
+func (s *Screen) Get(k string) *Viewport {
+	return s.components[k].v
+}
+
+func (s *Screen) Set(k string, v *Viewport, order int) {
+	s.components[k] = &orderedComponent{v: v, order: order}
+
+	// @todo populate drawOrder
+}
+
+func NewScreen(w, h uint) *Screen {
+	return &Screen{width: w, height: h, components: make(map[string]*orderedComponent), drawOrder: make([]string, 0)}
+}
+
 type cCellBorder struct {
 	V, H, NE, SE, SW, NW int
 }
@@ -27,6 +65,7 @@ func (c cCell) GetDrawPosition() Position {
 
 //
 // A viewport is an area on the screen that can be drawn to.
+// TileGrid...
 //
 type Viewport struct {
 	width, height uint

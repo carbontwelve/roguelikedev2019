@@ -32,7 +32,31 @@ var (
 	ColourTermFlat8LightGrey   = rl.Color{190, 195, 199, 255}
 )
 
-// Colours we work with
+// 16 Colour ANSI Palette:
+// This is loaded by the LoadTheme function and used by LinkColours to
+// fill the colours used by the game. This has an effect of allowing
+// themes to be switched at run time if needed.
+var (
+	ColourAnsiWhite       rl.Color
+	ColourAnsiBlack       rl.Color
+	ColourAnsiBlue        rl.Color
+	ColourAnsiGreen       rl.Color
+	ColourAnsiCyan        rl.Color
+	ColourAnsiRed         rl.Color
+	ColourAnsiPurple      rl.Color
+	ColourAnsiYellow      rl.Color
+	ColourAnsiGrey        rl.Color
+	ColourAnsiLightBlue   rl.Color
+	ColourAnsiLightGreen  rl.Color
+	ColourAnsiLightCyan   rl.Color
+	ColourAnsiLightRed    rl.Color
+	ColourAnsiLightPurple rl.Color
+	ColourAnsiLightYellow rl.Color
+	ColourAnsiLightGrey   rl.Color
+)
+
+// Game colours, these are the names of colours the game works with and can be
+// assigned by LinkColours to different theme colours.
 var (
 	ColourBg       rl.Color
 	ColourFg       rl.Color
@@ -46,21 +70,14 @@ var (
 	ColourBlood rl.Color
 )
 
-//// Maroon
-//ColourBg = rl.NewColor(71, 45, 60, 255)
-//
-//// Yellow
-//PlayerColour = rl.NewColor(244, 180, 27, 255)
-//
-//ColourWall    = rl.NewColor(122, 68, 74, 255)
-//ColourFloor  = rl.NewColor(122, 68, 74, 255)
-//ColourWallFOV   = rl.NewColor(207, 198, 184, 255)
-//ColourFloorFOV = rl.NewColor(207, 198, 184, 255)
+func LoadTheme() {
+	// ...
+}
 
 func LinkColours() {
 	ColourBg = ColourTermFlat8Black
 	ColourFg = ColourTermFlat8White
-	ColourUiLines = ColourTermFlat8Grey
+	ColourUiLines = ColourTermFlat8LightGrey
 	ColourPlayer = ColourTermFlat8LightYellow
 	ColourWall = ColourTermFlat8Grey
 	ColourWallFOV = ColourTermFlat8LightGrey
