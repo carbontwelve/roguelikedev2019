@@ -31,6 +31,9 @@ type World struct {
 	FOVAlgo      FOVAlgo
 	inputDelay   float32
 	Ui           *WorldUi
+	MouseX       int
+	MouseY       int
+	MouseHover   bool
 }
 
 func (w *World) InitWorld() {
@@ -158,6 +161,16 @@ func (w World) Draw(dt float32) {
 	for _, c := range w.Ui.MainWindow.cells {
 		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
 	}
+
+	// Tmp Draw Mouse cursor for debug
+	var CursorColour rl.Color
+	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		CursorColour = ColourWallFOV
+	} else {
+		CursorColour = ColourPlayer
+	}
+	w.e.font.Draw(178, rl.Vector2{X: float32(w.MouseX * 10), Y: float32(w.MouseY * 10)}, CursorColour)
+
 }
 
 func (w *World) AddMessage(msg SimpleMessage) {
@@ -171,6 +184,16 @@ func (w *World) Update(dt float32) {
 		w.Quit = true
 		return
 	}
+
+	mousePos := rl.GetMousePosition()
+	if mousePos.X > 0 && mousePos.Y > 0 && mousePos.X < float32(rl.GetScreenWidth()) && mousePos.Y < float32(rl.GetScreenHeight()) {
+		w.MouseHover = true
+		w.MouseX = int(mousePos.X / 10) // divided by cell size... this needs refactoring
+		w.MouseY = int(mousePos.Y / 10)
+	} else {
+		w.MouseHover = false
+	}
+
 	newPos := Position{0, 0}
 
 	if rl.IsKeyDown(rl.KeyUp) {
@@ -223,6 +246,7 @@ func (w *World) Update(dt float32) {
 	// Write to Ui.Statistics
 	w.Ui.Statistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), Position{1, 1}, ColourFg, ColourNC)
 	w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), Position{1, 2}, ColourFg, ColourNC)
+	w.Ui.Statistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), Position{1, 3}, ColourFg, ColourNC)
 
 	// Write Messages to Ui.MessageLog
 	for y, msg := range w.MessageLog.Messages {
