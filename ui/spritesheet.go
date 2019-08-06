@@ -1,4 +1,4 @@
-package main
+package ui
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -6,41 +6,41 @@ import (
 )
 
 type Sprite struct {
-	r rl.Rectangle
+	R rl.Rectangle
 	t *SpriteSheet
 }
 
 func (t Sprite) Draw(position rl.Vector2, tint rl.Color) {
-	rl.DrawTextureRec(t.t.TxTiles, t.r, position, tint)
+	rl.DrawTextureRec(t.t.TxTiles, t.R, position, tint)
 }
 
 type SpriteSheet struct {
-	TxTiles rl.Texture2D // Sprite sheet texture
-	TWidth  int
-	THeight int
-	Cols    int
-	Rows    int
-	Tiles   []*Sprite
+	TxTiles    rl.Texture2D // Sprite sheet texture
+	TileWidth  int
+	TileHeight int
+	Cols       int
+	Rows       int
+	Tiles      []*Sprite
 }
 
-func newSpriteSheet(tx rl.Texture2D, w, h int) *SpriteSheet {
+func NewSpriteSheet(tx rl.Texture2D, w, h int) *SpriteSheet {
 	cols := int(math.Ceil(float64(tx.Width / int32(w))))
 	rows := int(math.Ceil(float64(tx.Height / int32(h))))
 
 	tileSheet := &SpriteSheet{
-		TxTiles: tx,
-		TWidth:  w,
-		THeight: h,
-		Cols:    cols,
-		Rows:    rows,
-		Tiles:   make([]*Sprite, cols*rows),
+		TxTiles:    tx,
+		TileWidth:  w,
+		TileHeight: h,
+		Cols:       cols,
+		Rows:       rows,
+		Tiles:      make([]*Sprite, cols*rows),
 	}
 
 	// 320 x 90
 	for y := 0; y < rows; y++ {
 		for x := 0; x < cols; x++ {
 			tileSheet.Set(x, y, &Sprite{
-				r: rl.NewRectangle(float32(x*w), float32(y*h), float32(w), float32(h)),
+				R: rl.NewRectangle(float32(x*w), float32(y*h), float32(w), float32(h)),
 				t: tileSheet,
 			})
 			// fmt.Println("Setting Sprite (", x, ",", y, ") Idx (", tileSheet.IdxAt(x, y), ") as Rect(", x*w, ",", y*h, ",", (x*w)+10, ",", (y*h)+10, ")")
