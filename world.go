@@ -128,15 +128,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourWallFOV)
+					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourWallFOV)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourFloorFOV)
+					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourFloorFOV)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourWall)
+					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourWall)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), ColourFloor)
+					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourFloor)
 				}
 			}
 		}
@@ -145,23 +145,23 @@ func (w World) Draw(dt float32) {
 	// Draw Entities
 	for _, entity := range w.Entities.SortedByRenderOrder() {
 		if w.FovMap.IsVisible(entity.position) {
-			w.e.font.Draw(entity.char, entity.position.Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), entity.color)
+			w.e.font.Draw(entity.char, entity.position.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), entity.color)
 		}
 	}
 
 	// Draw Message Log UI
 	for _, c := range w.Ui.MessageLog.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
 	}
 
 	// Draw Ui.Statistics
 	for _, c := range w.Ui.Statistics.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
 	}
 
 	// Draw Ui.MainWindow
 	for _, c := range w.Ui.MainWindow.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TWidth, w.e.font.sprites.THeight), c.fg)
+		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
 	}
 
 	// Tmp Draw Mouse cursor for debug

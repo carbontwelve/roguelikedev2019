@@ -6,7 +6,7 @@ import (
 )
 
 //
-// @todo make this configurable?
+// @todo make this configurable!
 //
 const DungeonWidth = 80
 const DungeonHeight = 45

@@ -294,6 +294,6 @@ func (e Entity) Destination(dx, dy int) position.Position {
 }
 
 func (e Entity) Draw(engine *Engine) {
-	position := rl.NewVector2(float32(e.position.X*engine.font.sprites.THeight), float32(e.position.Y*engine.font.sprites.THeight))
+	position := rl.NewVector2(float32(e.position.X*engine.font.sprites.TileHeight), float32(e.position.Y*engine.font.sprites.TileHeight))
 	engine.font.Draw(e.char, position, e.color)
 }

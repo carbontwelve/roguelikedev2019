@@ -1,10 +1,13 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/ui"
+)
 
 type Engine struct {
 	states  *stack
-	sprites *SpriteSheet
+	sprites *ui.SpriteSheet
 	font    *Font
 	ui      int
 }
@@ -34,7 +37,7 @@ func (g *Engine) PeekState() GameState {
 func newEngine() *Engine {
 	engine := &Engine{
 		states:  NewStack(),
-		sprites: newSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
+		sprites: ui.NewSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
 		font:    newFont("arial10x10.png", 10, 10),
 	}
 

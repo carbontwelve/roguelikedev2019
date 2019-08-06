@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/ui"
 )
 
 //noinspection GoSnakeCaseUsage,GoUnusedConst
@@ -135,7 +136,7 @@ func getTcodCodec() *tcod_codec_ {
 //       implement other formats if they need them :)
 //
 type Font struct {
-	sprites  *SpriteSheet
+	sprites  *ui.SpriteSheet
 	asciiMap map[int]int // ascii_to_tcod
 }
 
@@ -145,7 +146,7 @@ func newFont(filename string, w, h int) *Font {
 
 	tex := rl.LoadTexture(filename)
 	font := &Font{
-		sprites:  newSpriteSheet(tex, w, h),
+		sprites:  ui.NewSpriteSheet(tex, w, h),
 		asciiMap: make(map[int]int),
 	}
 
@@ -195,5 +196,5 @@ func (f Font) Draw(asciiCode int, position rl.Vector2, tint rl.Color) {
 		asciiCode = 0
 	}
 
-	rl.DrawTextureRec(f.sprites.TxTiles, f.sprites.AtIdx(f.asciiMap[asciiCode]).r, position, tint)
+	rl.DrawTextureRec(f.sprites.TxTiles, f.sprites.AtIdx(f.asciiMap[asciiCode]).R, position, tint)
 }

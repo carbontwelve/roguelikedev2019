@@ -6,60 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-type orderedComponent struct {
-	v     *Viewport
-	order int
-}
-
-//
-// A Screen defines an overall drawable area and acts as a container for
-// Viewports. When Viewports are added to the Screen they can be given
-// a render order. This act to allow a form of "layering"
-//
-
-//
-// Screen:
-//
-// This acts as a container for component composition. When initiated you pass it the windows width and height
-// then a Tileset. Screen will use the Tileset and the windows width/height to work out how many rows and columns
-// can be fit into the available windowed area.
-//
-// Once initiated you can add components with the Set function. Components are to be added with their draw
-// order set as zIndex. This is so you can effectively layer components on top of one another.
-//
-// With each game loop iteration you should call HandleEvents followed by Draw. HandleEvents will allow components
-// to respond to user input.
-//
-type Screen struct {
-	width, height uint // In pixels e.g 800x600
-	components    map[string]*orderedComponent
-	positionCache map[position.Position]string // cache of component position so we can tell if a mouse pointer is hovering
-	drawOrder     []string
-	tileset       int // placeholder
-}
-
-func (s *Screen) HandleEvents() {
-	// @todo loop over components and handle any user input per component e.g for buttons
-}
-
-func (s Screen) Draw() {
-	// @todo draw to render interface... this can in future be terminal or graphical
-}
-
-func (s *Screen) Get(k string) *Viewport {
-	return s.components[k].v
-}
-
-func (s *Screen) Set(k string, v *Viewport, zIndex int) {
-	s.components[k] = &orderedComponent{v: v, order: zIndex}
-
-	// @todo populate drawOrder
-}
-
-func NewScreen(w, h uint) *Screen {
-	return &Screen{width: w, height: h, components: make(map[string]*orderedComponent), drawOrder: make([]string, 0)}
-}
-
 type cCellBorder struct {
 	V, H, NE, SE, SW, NW int
 }
