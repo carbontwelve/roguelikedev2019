@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gen2brain/raylib-go/raylib"
 	"math"
+	"raylibtinkering/position"
 	"sort"
 	"strconv"
 	"strings"
@@ -140,7 +141,7 @@ func (e *Entities) Set(k string, v *Entity) {
 	e.Entities[k] = v
 }
 
-func (e Entities) FoundAtPosition(pos Position) bool {
+func (e Entities) FoundAtPosition(pos position.Position) bool {
 	for _, entity := range e.Entities {
 		if entity.position.Same(pos) {
 			return true
@@ -149,7 +150,7 @@ func (e Entities) FoundAtPosition(pos Position) bool {
 	return false
 }
 
-func (e Entities) BlockingAtPosition(pos Position) bool {
+func (e Entities) BlockingAtPosition(pos position.Position) bool {
 	for _, entity := range e.Entities {
 		if entity.position.Same(pos) {
 			return entity.blocks
@@ -158,7 +159,7 @@ func (e Entities) BlockingAtPosition(pos Position) bool {
 	return false
 }
 
-func (e Entities) GetBlockingAtPosition(pos Position) *Entity {
+func (e Entities) GetBlockingAtPosition(pos position.Position) *Entity {
 	for _, entity := range e.Entities {
 		if entity.Exists() && entity.position.Same(pos) && entity.blocks == true {
 			return entity
@@ -225,14 +226,14 @@ type Entity struct {
 	Name               string
 	RenderOrder        renderOrder
 	Type               entityType
-	position           Position
+	position           position.Position
 	char               int
 	color              rl.Color
 	blocks             bool
 	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
+func NewEntity(pos position.Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
 	entity := &Entity{
 		Name:        name,
 		Type:        entityType,
@@ -263,16 +264,16 @@ func (e *Entity) Move(dx, dy int) {
 	e.position.Y += dy
 }
 
-func (e *Entity) MoveTo(pos Position) {
+func (e *Entity) MoveTo(pos position.Position) {
 	e.position.X = pos.X
 	e.position.Y = pos.Y
 }
 
-func (e Entity) NextMove(dx, dy int) Position {
-	return Position{e.position.X + dx, e.position.Y + dy}
+func (e Entity) NextMove(dx, dy int) position.Position {
+	return position.Position{e.position.X + dx, e.position.Y + dy}
 }
 
-func (e *Entity) MoveTowards(pos Position, entities Entities, terrain Terrain) {
+func (e *Entity) MoveTowards(pos position.Position, entities Entities, terrain Terrain) {
 
 	dx := pos.X - e.position.X
 	dy := pos.Y - e.position.Y
@@ -281,15 +282,15 @@ func (e *Entity) MoveTowards(pos Position, entities Entities, terrain Terrain) {
 	dx = int(math.Round(float64(dx / distance)))
 	dy = int(math.Round(float64(dy / distance)))
 
-	to := Position{e.position.X + dx, e.position.Y + dy}
+	to := position.Position{e.position.X + dx, e.position.Y + dy}
 
 	if terrain.Cell(to).T == FreeCell && entities.BlockingAtPosition(to) == false {
 		e.Move(dx, dy)
 	}
 }
 
-func (e Entity) Destination(dx, dy int) Position {
-	return Position{e.position.X + dx, e.position.Y + dy}
+func (e Entity) Destination(dx, dy int) position.Position {
+	return position.Position{e.position.X + dx, e.position.Y + dy}
 }
 
 func (e Entity) Draw(engine *Engine) {

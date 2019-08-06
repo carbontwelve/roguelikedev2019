@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"math"
+	"raylibtinkering/position"
 )
 
 /**
@@ -45,27 +46,27 @@ type FovMap struct {
 	visibleCache     []int
 }
 
-func (f *FovMap) IsBlocked(pos Position) bool {
-	return f.blocked[pos.idx()]
+func (f *FovMap) IsBlocked(pos position.Position) bool {
+	return f.blocked[pos.Idx()]
 }
 
-func (f *FovMap) SetBlocked(pos Position, c bool) {
-	f.blocked[pos.idx()] = c
+func (f *FovMap) SetBlocked(pos position.Position, c bool) {
+	f.blocked[pos.Idx()] = c
 }
 
-func (f *FovMap) IsVisible(pos Position) bool {
-	return f.visible[pos.idx()]
+func (f *FovMap) IsVisible(pos position.Position) bool {
+	return f.visible[pos.Idx()]
 }
 
-func (f *FovMap) SetVisible(pos Position) {
-	f.visible[pos.idx()] = true
-	f.visibleCache = append(f.visibleCache, pos.idx())
+func (f *FovMap) SetVisible(pos position.Position) {
+	f.visible[pos.Idx()] = true
+	f.visibleCache = append(f.visibleCache, pos.Idx())
 }
 
 func (f *FovMap) ResetVisibility() {
 	for x := 0; x < f.w; x++ {
 		for y := 0; y < f.h; y++ {
-			f.visible[Position{x, y}.idx()] = false
+			f.visible[position.Position{x, y}.Idx()] = false
 		}
 	}
 	f.visibleCache = []int{}
@@ -74,8 +75,8 @@ func (f *FovMap) ResetVisibility() {
 //
 // Returns whether the coordinate is inside the map bounds.
 //
-func (f FovMap) Inside(pos Position) bool {
-	return pos.valid(f.w, f.h)
+func (f FovMap) Inside(pos position.Position) bool {
+	return pos.Valid(f.w, f.h)
 }
 
 func NewFovMap(w, h int) *FovMap {
@@ -153,9 +154,9 @@ func fovCircularCastRay(fov *FovMap, xo, yo, xd, yd, r2 int, walls bool) {
 	cury := yo
 	in := false
 	blocked := false
-	if fov.Inside(Position{curx, cury}) {
+	if fov.Inside(position.Position{curx, cury}) {
 		in = true
-		fov.SetVisible(Position{curx, cury})
+		fov.SetVisible(position.Position{curx, cury})
 	}
 	for _, p := range fovLine(xo, yo, xd, yd) {
 		curx = p.X
@@ -166,15 +167,15 @@ func fovCircularCastRay(fov *FovMap, xo, yo, xd, yd, r2 int, walls bool) {
 				break
 			}
 		}
-		if fov.Inside(Position{curx, cury}) {
+		if fov.Inside(position.Position{curx, cury}) {
 			in = true
-			if !blocked && fov.IsBlocked(Position{curx, cury}) {
+			if !blocked && fov.IsBlocked(position.Position{curx, cury}) {
 				blocked = true
 			} else if blocked {
 				break
 			}
 			if walls || !blocked {
-				fov.SetVisible(Position{curx, cury})
+				fov.SetVisible(position.Position{curx, cury})
 			}
 		} else if in {
 			break
@@ -187,20 +188,20 @@ func fovCircularPostProc(fov *FovMap, x0, y0, x1, y1, dx, dy int) {
 		for cy := y0; cy <= y1; cy++ {
 			x2 := cx + dx
 			y2 := cy + dy
-			if fov.Inside(Position{cx, cy}) && fov.IsVisible(Position{cx, cy}) && !fov.IsBlocked(Position{cx, cy}) {
+			if fov.Inside(position.Position{cx, cy}) && fov.IsVisible(position.Position{cx, cy}) && !fov.IsBlocked(position.Position{cx, cy}) {
 				if x2 >= x0 && x2 <= x1 {
-					if fov.Inside(Position{x2, cy}) && fov.IsBlocked(Position{x2, cy}) {
-						fov.SetVisible(Position{x2, cy})
+					if fov.Inside(position.Position{x2, cy}) && fov.IsBlocked(position.Position{x2, cy}) {
+						fov.SetVisible(position.Position{x2, cy})
 					}
 				}
 				if y2 >= y0 && y2 <= y1 {
-					if fov.Inside(Position{cx, y2}) && fov.IsBlocked(Position{cx, y2}) {
-						fov.SetVisible(Position{cx, y2})
+					if fov.Inside(position.Position{cx, y2}) && fov.IsBlocked(position.Position{cx, y2}) {
+						fov.SetVisible(position.Position{cx, y2})
 					}
 				}
 				if x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1 {
-					if fov.Inside(Position{x2, y2}) && fov.IsBlocked(Position{x2, y2}) {
-						fov.SetVisible(Position{x2, y2})
+					if fov.Inside(position.Position{x2, y2}) && fov.IsBlocked(position.Position{x2, y2}) {
+						fov.SetVisible(position.Position{x2, y2})
 					}
 				}
 			}

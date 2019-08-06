@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/position"
 )
 
 /**
@@ -93,7 +94,7 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
-		w.Ui.Statistics.SetRow("Turn: player", Position{1, 3}, rl.Orange, rl.Black)
+		w.Ui.Statistics.SetRow("Turn: player", position.Position{1, 3}, rl.Orange, rl.Black)
 
 		if w.NextTurnMove.Zero() {
 			// If no player input wait
@@ -138,7 +139,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterTurn:
 		e := w.Entities.Get(mev.NMons)
 		if e.Exists() {
-			w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %s", mev.NMons), Position{1, 3}, rl.Orange, rl.Black)
+			w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %s", mev.NMons), position.Position{1, 3}, rl.Orange, rl.Black)
 			e.Brain.HandleTurn(w, mev)
 		} else {
 			// We have died

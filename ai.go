@@ -1,5 +1,7 @@
 package main
 
+import "raylibtinkering/position"
+
 type Brain interface {
 	HandleTurn(w *World, ev event)
 	SetOwner(e *Entity)
@@ -52,7 +54,7 @@ func (b PlayerBrain) HandleTurn(w *World, ev event) {
 			}
 			w.FOVRecompute = true
 		}
-		w.NextTurnMove = Position{0, 0}
+		w.NextTurnMove = position.Position{0, 0}
 	}
 
 	// @see https://github.com/anaseto/boohu/blob/e193aa0453dce8b7ffcae62cfcd79877cb01635d/player.go#L447

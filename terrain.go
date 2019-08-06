@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 	"math/rand"
+	"raylibtinkering/position"
 	"strings"
 )
 
@@ -13,22 +14,22 @@ type cellType int
 //
 // Terrain Generator functions return the players starting Position.
 //
-type TerrainGeneratorFunc func(*Terrain, *Entities, Config) Position
+type TerrainGeneratorFunc func(*Terrain, *Entities, Config) position.Position
 
-func TestTerrainGenerator(t *Terrain, e *Entities, c Config) Position {
+func TestTerrainGenerator(t *Terrain, e *Entities, c Config) position.Position {
 	t.Fill(FreeCell)
-	t.SetCell(Position{30, 22}, WallCell)
-	t.SetCell(Position{31, 22}, WallCell)
-	t.SetCell(Position{32, 22}, WallCell)
-	return Position{30, 23}
+	t.SetCell(position.Position{30, 22}, WallCell)
+	t.SetCell(position.Position{31, 22}, WallCell)
+	t.SetCell(position.Position{32, 22}, WallCell)
+	return position.Position{30, 23}
 }
 
-func TutorialTerrainGenerator(t *Terrain, e *Entities, c Config) Position {
+func TutorialTerrainGenerator(t *Terrain, e *Entities, c Config) position.Position {
 	t.Fill(WallCell)
 
 	var isValid bool
 	var rooms []Rect
-	var playerStartPosition Position
+	var playerStartPosition position.Position
 
 	numRooms := 0
 	maxRooms := c.Get("maxRooms").(int)
@@ -48,7 +49,7 @@ func TutorialTerrainGenerator(t *Terrain, e *Entities, c Config) Position {
 		for i := 0; i < monsterCount; i++ {
 			//Choose a random location in the room
 
-			location := Position{
+			location := position.Position{
 				X: IntnBetween(room.x1+1, room.x2-1),
 				Y: IntnBetween(room.y1+1, room.y2-1),
 			}
@@ -96,7 +97,7 @@ func TutorialTerrainGenerator(t *Terrain, e *Entities, c Config) Position {
 
 			if numRooms == 0 {
 				// this is the first room, where the player starts at
-				playerStartPosition = Position{newX, newY}
+				playerStartPosition = position.Position{newX, newY}
 			} else {
 				// all rooms after the first:
 				// connect it to the previous room with a tunnel
@@ -146,7 +147,7 @@ type Terrain struct {
 func (t Terrain) SetFOVBlocked(fov *FovMap) {
 	for x := 0; x < t.w; x++ {
 		for y := 0; y < t.h; y++ {
-			pos := Position{x, y}
+			pos := position.Position{x, y}
 			if t.Cell(pos).T == WallCell {
 				fov.SetBlocked(pos, true)
 			}
@@ -158,20 +159,20 @@ func (t Terrain) SetFOVBlocked(fov *FovMap) {
 // Runs the provided terrain generator function against
 // this struct.
 //
-func (t *Terrain) Generate(f TerrainGeneratorFunc, e *Entities, c Config) Position {
+func (t *Terrain) Generate(f TerrainGeneratorFunc, e *Entities, c Config) position.Position {
 	return f(t, e, c)
 }
 
-func (t *Terrain) Cell(pos Position) tCell {
-	return t.Cells[pos.idx()]
+func (t *Terrain) Cell(pos position.Position) tCell {
+	return t.Cells[pos.Idx()]
 }
 
-func (t *Terrain) SetCell(pos Position, c cellType) {
-	t.Cells[pos.idx()].T = c
+func (t *Terrain) SetCell(pos position.Position, c cellType) {
+	t.Cells[pos.Idx()].T = c
 }
 
-func (t *Terrain) SetExplored(pos Position) {
-	t.Cells[pos.idx()].Explored = true
+func (t *Terrain) SetExplored(pos position.Position) {
+	t.Cells[pos.Idx()].Explored = true
 }
 
 func (t Terrain) ToString() string {
@@ -179,7 +180,7 @@ func (t Terrain) ToString() string {
 
 	for y := 0; y < t.h; y++ {
 		for x := 0; x < t.w; x++ {
-			if t.Cell(Position{x, y}).T == WallCell {
+			if t.Cell(position.Position{x, y}).T == WallCell {
 				sb.WriteString("#")
 			} else {
 				sb.WriteString(".")
@@ -197,7 +198,7 @@ func (t Terrain) ToString() string {
 func (t *Terrain) Fill(c cellType) {
 	for x := 0; x < t.w; x++ {
 		for y := 0; y < t.h; y++ {
-			t.SetCell(Position{x, y}, c)
+			t.SetCell(position.Position{x, y}, c)
 		}
 	}
 }
@@ -206,15 +207,15 @@ func (t *Terrain) Fill(c cellType) {
 // Returns the center cell of the terrain
 // @todo bounds check
 //
-func (t Terrain) Center() Position {
-	return Position{int(math.Floor(float64(t.w/2))) - 1, int(math.Floor(float64(t.h/2))) - 1}
+func (t Terrain) Center() position.Position {
+	return position.Position{int(math.Floor(float64(t.w/2))) - 1, int(math.Floor(float64(t.h/2))) - 1}
 }
 
 //
 // Returns whether the coordinate is inside the map bounds.
 //
-func (t Terrain) Inside(pos Position) bool {
-	return pos.valid(t.w, t.h)
+func (t Terrain) Inside(pos position.Position) bool {
+	return pos.Valid(t.w, t.h)
 }
 
 func NewTerrain(w, h int) *Terrain {
@@ -231,8 +232,8 @@ func NewTerrain(w, h int) *Terrain {
 func (t *Terrain) AddRoom(room Rect) {
 	for x := room.x1 + 1; x < room.x2; x++ {
 		for y := room.y1 + 1; y < room.y2; y++ {
-			pos := Position{x, y}
-			if pos.valid(t.w, t.h) {
+			pos := position.Position{x, y}
+			if pos.Valid(t.w, t.h) {
 				t.SetCell(pos, FreeCell)
 			}
 		}
@@ -245,8 +246,8 @@ func (t *Terrain) AddRoom(room Rect) {
 //
 func (t *Terrain) AddHTunnel(x1, x2, y int) {
 	for x := int(math.Min(float64(x1), float64(x2))); x < int(math.Max(float64(x1), float64(x2)))+1; x++ {
-		pos := Position{x, y}
-		if pos.valid(t.w, t.h) {
+		pos := position.Position{x, y}
+		if pos.Valid(t.w, t.h) {
 			t.SetCell(pos, FreeCell)
 		}
 	}
@@ -258,8 +259,8 @@ func (t *Terrain) AddHTunnel(x1, x2, y int) {
 //
 func (t *Terrain) AddVTunnel(y1, y2, x int) {
 	for y := int(math.Min(float64(y1), float64(y2))); y < int(math.Max(float64(y1), float64(y2)))+1; y++ {
-		pos := Position{x, y}
-		if pos.valid(t.w, t.h) {
+		pos := position.Position{x, y}
+		if pos.Valid(t.w, t.h) {
 			t.SetCell(pos, FreeCell)
 		}
 	}
