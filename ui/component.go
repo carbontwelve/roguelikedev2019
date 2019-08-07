@@ -7,7 +7,7 @@ import (
 )
 
 type BorderStyle struct {
-	V, H, NE, SE, SW, NW int
+	V, H, NE, SE, SW, NW uint
 }
 
 var SingleWallBorder = BorderStyle{
@@ -56,7 +56,7 @@ func (c *Component) DrawBorder() {
 	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, ColourUiLines, ColourBg)
 }
 
-func (c *Component) SetChar(r int, p position.Position, fg, bg rl.Color) {
+func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {
 	cell := c.cells[p]
 	if cell == nil {
 		return
@@ -103,7 +103,7 @@ func (c *Component) SetString(str string, p position.Position, fg, bg rl.Color) 
 	for i, r := range a {
 		x := p.X + i
 		c := c.cells[position.Position{X: x, Y: p.Y}]
-		c.char = int(r)
+		c.char = uint(r)
 		c.bg = bg
 		c.fg = fg
 	}

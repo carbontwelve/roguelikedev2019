@@ -2,6 +2,7 @@ package ui
 
 import (
 	"raylibtinkering/position"
+	"sort"
 )
 
 type componentZOrder struct {
@@ -27,7 +28,8 @@ type Screen struct {
 	Rows, Cols    uint
 	components    map[string]*componentZOrder
 	positionCache map[position.Position]string // cache of component position so we can tell if a mouse pointer is hovering
-	drawOrder     []string
+	drawOrder     []*componentZOrder
+	dirty         bool
 	tileset       *Tileset
 }
 
@@ -35,8 +37,27 @@ func (s *Screen) HandleEvents() {
 	// @todo loop over components and handle any user input per component e.g for buttons
 }
 
-func (s Screen) Draw() {
-	// @todo draw to render interface... this can in future be terminal or graphical
+func (s *Screen) Draw() {
+	if s.dirty {
+		s.drawOrder = make([]*componentZOrder, 0)
+
+		for _, v := range s.components {
+			s.drawOrder = append(s.drawOrder, v)
+		}
+
+		sort.Slice(s.drawOrder, func(i, j int) bool {
+			return s.drawOrder[i].order < s.drawOrder[j].order
+		})
+		s.dirty = false
+	}
+
+	for _, kv := range s.drawOrder {
+		// fmt.Println("At zOrder (", i,") Drawing: ", kv.c.Name, " Expected zOrder: ", kv.order )
+		for _, cell := range kv.c.cells {
+			s.tileset.Draw(cell.char, cell.GetDrawPosition(), cell.fg, cell.bg)
+		}
+	}
+
 }
 
 func (s Screen) Get(k string) *Component {
@@ -45,14 +66,14 @@ func (s Screen) Get(k string) *Component {
 
 func (s *Screen) Set(c *Component, zIndex int) {
 	s.components[c.Name] = &componentZOrder{c: c, order: zIndex}
-
-	// @todo populate drawOrder
+	s.dirty = true
 }
 
 func (s *Screen) Reset() {
 	s.components = make(map[string]*componentZOrder)
-	s.drawOrder = make([]string, 0)
+	s.drawOrder = make([]*componentZOrder, 0)
 	s.positionCache = make(map[position.Position]string)
+	s.dirty = true
 }
 
 func (s *Screen) Unload() {
@@ -60,7 +81,7 @@ func (s *Screen) Unload() {
 }
 
 func NewScreen(w, h uint, t *Tileset) (error, *Screen) {
-	screen := &Screen{width: w, height: h, components: make(map[string]*componentZOrder), drawOrder: make([]string, 0), tileset: t}
+	screen := &Screen{dirty: true, width: w, height: h, components: make(map[string]*componentZOrder), drawOrder: make([]*componentZOrder, 0), tileset: t}
 
 	// @todo check tile width and height are > 0
 	screen.Cols = w / uint(t.sprites.TileWidth)

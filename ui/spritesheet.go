@@ -16,7 +16,7 @@ func (t Sprite) Draw(position position.Position, fg, bg rl.Color) {
 		rl.DrawRectangle(int32(position.X), int32(position.Y), int32(t.R.Width), int32(t.R.Height), bg)
 	}
 
-	rl.DrawTextureRec(t.t.TxTiles, t.R, position.Vector2(1, 1), fg)
+	rl.DrawTextureRec(t.t.TxTiles, t.R, position.Vector2(int(t.t.TileWidth), int(t.t.TileHeight)), fg)
 }
 
 type SpriteSheet struct {

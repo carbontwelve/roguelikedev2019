@@ -227,13 +227,13 @@ type Entity struct {
 	RenderOrder        renderOrder
 	Type               entityType
 	position           position.Position
-	char               int
+	char               uint
 	color              rl.Color
 	blocks             bool
 	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos position.Position, char int, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
+func NewEntity(pos position.Position, char uint, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
 	entity := &Entity{
 		Name:        name,
 		Type:        entityType,

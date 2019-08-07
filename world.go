@@ -68,9 +68,9 @@ func NewWorld(e *Engine) *World {
 	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
 	// @todo refactor DungeonWidth/Height to something more practical
-	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0), 999)
-	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6), 999)
-	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0), 999)
+	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0), 10)
+	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6), 20)
+	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0), 25)
 
 	e.screen.Get("MessageLog").SetBorderStyle(ui2.SingleWallBorder)
 	e.screen.Get("Statistics").SetBorderStyle(ui2.SingleWallBorder)
