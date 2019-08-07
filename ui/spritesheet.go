@@ -13,7 +13,7 @@ type Sprite struct {
 
 func (t Sprite) Draw(position position.Position, fg, bg rl.Color) {
 	if bg != ColourNC {
-		rl.DrawRectangle(int32(position.X), int32(position.Y), int32(t.R.Width), int32(t.R.Height), bg)
+		rl.DrawRectangleV(position.Vector2(int(t.t.TileWidth), int(t.t.TileHeight)), rl.Vector2{X: float32(t.t.TileWidth), Y: float32(t.t.TileHeight)}, bg)
 	}
 
 	rl.DrawTextureRec(t.t.TxTiles, t.R, position.Vector2(int(t.t.TileWidth), int(t.t.TileHeight)), fg)
