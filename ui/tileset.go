@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/position"
 )
 
 //noinspection GoSnakeCaseUsage,GoUnusedConst
@@ -168,7 +169,7 @@ func (t *Tileset) mapAsciiToFont(asciiCode, fontCharX, fontCharY uint) {
 }
 
 func (t *Tileset) mapClone(newCodepoint, oldCodepoint uint) {
-	if oldCodepoint < 0 || oldCodepoint >= t.max {
+	if oldCodepoint >= t.max {
 		return
 	}
 
@@ -179,6 +180,18 @@ func (t Tileset) Debug() {
 	for i := uint(0); i < t.max; i++ {
 		fmt.Println("ASCII [", i, "] to idx [", t.asciiMap[i], "]")
 	}
+}
+
+func (t Tileset) Draw(asciiCode uint, position position.Position, fg, bg rl.Color) {
+	if asciiCode > 256 {
+		asciiCode = 0
+	}
+
+	t.sprites.AtIdx(t.asciiMap[asciiCode]).Draw(position, fg, bg)
+}
+
+func (t *Tileset) Unload() {
+	t.sprites.Unload()
 }
 
 //

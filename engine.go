@@ -1,15 +1,13 @@
 package main
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/ui"
 )
 
 type Engine struct {
-	states  *stack
-	sprites *ui.SpriteSheet
-	font    *Font
-	ui      int
+	states *stack
+	screen *ui.Screen
 }
 
 func (g *Engine) PushState(state GameState) {
@@ -35,10 +33,11 @@ func (g *Engine) PeekState() GameState {
 }
 
 func newEngine() *Engine {
+	_, s := ui.NewScreen(uint(rl.GetScreenWidth()), uint(rl.GetScreenHeight()), ui.NewTileset("arial10x10.png", ui.LayoutTcod, 10, 10))
+
 	engine := &Engine{
-		states:  NewStack(),
-		sprites: ui.NewSpriteSheet(rl.LoadTexture("arial10x10.png"), 10, 10),
-		font:    newFont("arial10x10.png", 10, 10),
+		states: NewStack(),
+		screen: s,
 	}
 
 	engine.PushState(NewLobbyState(engine))
@@ -47,5 +46,5 @@ func newEngine() *Engine {
 }
 
 func (g *Engine) Unload() {
-	g.sprites.Unload()
+	g.screen.Unload()
 }

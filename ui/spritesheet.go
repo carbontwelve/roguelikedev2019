@@ -3,6 +3,7 @@ package ui
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
+	"raylibtinkering/position"
 )
 
 type Sprite struct {
@@ -10,8 +11,12 @@ type Sprite struct {
 	t *SpriteSheet
 }
 
-func (t Sprite) Draw(position rl.Vector2, tint rl.Color) {
-	rl.DrawTextureRec(t.t.TxTiles, t.R, position, tint)
+func (t Sprite) Draw(position position.Position, fg, bg rl.Color) {
+	if bg != ColourNC {
+		rl.DrawRectangle(int32(position.X), int32(position.Y), int32(t.R.Width), int32(t.R.Height), bg)
+	}
+
+	rl.DrawTextureRec(t.t.TxTiles, t.R, position.Vector2(1, 1), fg)
 }
 
 type SpriteSheet struct {
@@ -58,7 +63,7 @@ func (t SpriteSheet) At(x, y uint) *Sprite {
 	return t.Tiles[t.IdxAt(x, y)]
 }
 
-func (t SpriteSheet) AtIdx(idx int) *Sprite {
+func (t SpriteSheet) AtIdx(idx uint) *Sprite {
 	// @todo add bounds check
 	return t.Tiles[idx]
 }

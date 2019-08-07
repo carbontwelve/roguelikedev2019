@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/ui"
 )
 
 type LobbyState struct {
@@ -17,7 +18,7 @@ func NewLobbyState(e *Engine) *LobbyState {
 }
 
 func (s LobbyState) Draw(dt float32) {
-	rl.ClearBackground(ColourBg)
+	rl.ClearBackground(ui.ColourBg)
 }
 
 func (s *LobbyState) Update(dt float32) {

@@ -15,7 +15,11 @@ import (
 type Cell struct {
 	char   int
 	fg, bg rl.Color
-	x, y   uint // Offset x,y based upon Viewport x + cCell Position in the cells map
+	x, y   int // Offset x,y based upon Viewport x + cCell Position in the cells map
+}
+
+func (c *Cell) Reset() {
+	c = &Cell{}
 }
 
 func (c Cell) GetDrawPosition() position.Position {

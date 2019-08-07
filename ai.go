@@ -1,6 +1,9 @@
 package main
 
-import "raylibtinkering/position"
+import (
+	"raylibtinkering/position"
+	"raylibtinkering/ui"
+)
 
 type Brain interface {
 	HandleTurn(w *World, ev event)
@@ -25,7 +28,7 @@ func (b HindBrain) HandleInteractionResults(w *World, results InteractionResults
 		if val, ok := result["death"]; ok {
 			e := val.(*Entity)
 			e.Name = "remains of " + e.Name
-			e.color = ColourBlood
+			e.color = ui.ColourBlood
 			e.char = '%'
 			e.RenderOrder = RoCorpse
 		}

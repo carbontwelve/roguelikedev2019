@@ -5,14 +5,9 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
+	ui2 "raylibtinkering/ui"
 	"time"
 )
-
-type WorldUi struct {
-	MainWindow *Viewport
-	MessageLog *Viewport
-	Statistics *Viewport
-}
 
 type World struct {
 	State
@@ -31,7 +26,6 @@ type World struct {
 	FOVRecompute bool
 	FOVAlgo      FOVAlgo
 	inputDelay   float32
-	Ui           *WorldUi
 	MouseX       int
 	MouseY       int
 	MouseHover   bool
@@ -46,7 +40,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ui2.ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -71,16 +65,15 @@ func (w *World) InitWorld() {
 }
 
 func NewWorld(e *Engine) *World {
-	ui := &WorldUi{
-		// @todo refactor DungeonWidth/Height to something more practical
-		MainWindow: NewViewport(position.DungeonWidth-24, position.DungeonHeight-5, 0, 0),
-		MessageLog: NewViewport(position.DungeonWidth, 6, 0, position.DungeonHeight-6),
-		Statistics: NewViewport(25, position.DungeonHeight-5, position.DungeonWidth-25, 0),
-	}
+	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
-	ui.MessageLog.SetBordered(true)
-	ui.Statistics.SetBordered(true)
-	// ui.MainWindow.SetBordered(true)
+	// @todo refactor DungeonWidth/Height to something more practical
+	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0), 999)
+	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6), 999)
+	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0), 999)
+
+	e.screen.Get("MessageLog").SetBorderStyle(ui2.SingleWallBorder)
+	e.screen.Get("Statistics").SetBorderStyle(ui2.SingleWallBorder)
 
 	world := &World{
 		NextTurnMove: position.Position{0, 0},
@@ -95,7 +88,6 @@ func NewWorld(e *Engine) *World {
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
 		MessageLog:   NewMessageLog(0, position.DungeonWidth, 4),
-		Ui:           ui,
 	}
 	world.InitWorld()
 	return world
@@ -118,7 +110,9 @@ func (w *World) PopIEvent() iEvent {
 }
 
 func (w World) Draw(dt float32) {
-	rl.ClearBackground(ColourBg)
+	rl.ClearBackground(ui2.ColourBg)
+
+	uiViewport := w.e.screen.Get("Viewport")
 
 	// Draw Terrain
 	for x := 0; x < w.Terrain.w; x++ {
@@ -128,15 +122,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourWallFOV)
+					uiViewport.SetChar(178, pos, ui2.ColourWallFOV, ui2.ColourNC)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourFloorFOV)
+					uiViewport.SetChar('.', pos, ui2.ColourFloorFOV, ui2.ColourNC)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					w.e.font.Draw(178, pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourWall)
+					uiViewport.SetChar(178, pos, ui2.ColourWall, ui2.ColourNC)
 				} else {
-					w.e.font.Draw('.', pos.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), ColourFloor)
+					uiViewport.SetChar('.', pos, ui2.ColourFloor, ui2.ColourNC)
 				}
 			}
 		}
@@ -145,33 +139,33 @@ func (w World) Draw(dt float32) {
 	// Draw Entities
 	for _, entity := range w.Entities.SortedByRenderOrder() {
 		if w.FovMap.IsVisible(entity.position) {
-			w.e.font.Draw(entity.char, entity.position.Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), entity.color)
+			uiViewport.SetChar(entity.char, entity.position, entity.color, ui2.ColourNC)
 		}
 	}
 
 	// Draw Message Log UI
-	for _, c := range w.Ui.MessageLog.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	}
+	//for _, c := range w.Ui.MessageLog.cells {
+	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
+	//}
 
 	// Draw Ui.Statistics
-	for _, c := range w.Ui.Statistics.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	}
+	//for _, c := range w.Ui.Statistics.cells {
+	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
+	//}
 
 	// Draw Ui.MainWindow
-	for _, c := range w.Ui.MainWindow.cells {
-		w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	}
+	//for _, c := range w.Ui.MainWindow.cells {
+	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
+	//}
 
 	// Tmp Draw Mouse cursor for debug
-	var CursorColour rl.Color
-	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		CursorColour = ColourWallFOV
-	} else {
-		CursorColour = ColourPlayer
-	}
-	w.e.font.Draw(178, rl.Vector2{X: float32(w.MouseX * 10), Y: float32(w.MouseY * 10)}, CursorColour)
+	//var CursorColour rl.Color
+	//if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+	//	CursorColour = ui2.ColourWallFOV
+	//} else {
+	//	CursorColour = ui2.ColourPlayer
+	//}
+	//w.e.font.Draw(178, rl.Vector2{X: float32(w.MouseX * 10), Y: float32(w.MouseY * 10)}, CursorColour)
 
 }
 
@@ -246,14 +240,17 @@ func (w *World) Update(dt float32) {
 	}
 
 	// Write to Ui.Statistics
-	w.Ui.Statistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ColourFg, ColourNC)
-	w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ColourFg, ColourNC)
-	w.Ui.Statistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ColourFg, ColourNC)
+	uiStatistics := w.e.screen.Get("Statistics")
+
+	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui2.ColourFg, ui2.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui2.ColourFg, ui2.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui2.ColourFg, ui2.ColourNC)
 
 	// Write Messages to Ui.MessageLog
+	uiMessageLog := w.e.screen.Get("MessageLog")
 	for y, msg := range w.MessageLog.Messages {
-		w.Ui.MessageLog.ClearRow(uint(1 + y))
-		w.Ui.MessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ColourNC)
+		uiMessageLog.ClearRow(uint(1 + y))
+		uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui2.ColourNC)
 	}
 }
 

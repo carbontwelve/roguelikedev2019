@@ -293,7 +293,7 @@ func (e Entity) Destination(dx, dy int) position.Position {
 	return position.Position{e.position.X + dx, e.position.Y + dy}
 }
 
-func (e Entity) Draw(engine *Engine) {
-	position := rl.NewVector2(float32(e.position.X*engine.font.sprites.TileHeight), float32(e.position.Y*engine.font.sprites.TileHeight))
-	engine.font.Draw(e.char, position, e.color)
-}
+//func (e Entity) Draw(engine *Engine) {
+//	position := rl.NewVector2(float32(e.position.X*engine.font.sprites.TileHeight), float32(e.position.Y*engine.font.sprites.TileHeight))
+//	engine.font.Draw(e.char, position, e.color)
+//}

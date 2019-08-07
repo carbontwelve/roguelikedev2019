@@ -13,7 +13,7 @@ type componentZOrder struct {
 // Screen:
 //
 // This acts as a container for component composition. When initiated you pass it the windows width and height
-// then a Tileset. Screen will use the Tileset and the windows width/height to work out how many rows and columns
+// then a Tileset. Screen will use the Tileset and the windows width/height to work out how many Rows and columns
 // can be fit into the available windowed area.
 //
 // Once initiated you can add components with the Set function. Components are to be added with their draw
@@ -24,11 +24,11 @@ type componentZOrder struct {
 //
 type Screen struct {
 	width, height uint // In pixels e.g 800x600
-	rows, cols    uint
+	Rows, Cols    uint
 	components    map[string]*componentZOrder
 	positionCache map[position.Position]string // cache of component position so we can tell if a mouse pointer is hovering
 	drawOrder     []string
-	sprites       *SpriteSheet
+	tileset       *Tileset
 }
 
 func (s *Screen) HandleEvents() {
@@ -39,22 +39,32 @@ func (s Screen) Draw() {
 	// @todo draw to render interface... this can in future be terminal or graphical
 }
 
-func (s *Screen) Get(k string) *Component {
+func (s Screen) Get(k string) *Component {
 	return s.components[k].c
 }
 
-func (s *Screen) Set(k string, c *Component, zIndex int) {
-	s.components[k] = &componentZOrder{c: c, order: zIndex}
+func (s *Screen) Set(c *Component, zIndex int) {
+	s.components[c.Name] = &componentZOrder{c: c, order: zIndex}
 
 	// @todo populate drawOrder
 }
 
-func NewScreen(w, h uint, s *SpriteSheet) (error, *Screen) {
-	screen := &Screen{width: w, height: h, components: make(map[string]*componentZOrder), drawOrder: make([]string, 0), sprites: s}
+func (s *Screen) Reset() {
+	s.components = make(map[string]*componentZOrder)
+	s.drawOrder = make([]string, 0)
+	s.positionCache = make(map[position.Position]string)
+}
+
+func (s *Screen) Unload() {
+	s.tileset.Unload()
+}
+
+func NewScreen(w, h uint, t *Tileset) (error, *Screen) {
+	screen := &Screen{width: w, height: h, components: make(map[string]*componentZOrder), drawOrder: make([]string, 0), tileset: t}
 
 	// @todo check tile width and height are > 0
-	screen.cols = w / uint(s.TileHeight)
-	screen.width = h / uint(s.TileHeight)
+	screen.Cols = w / uint(t.sprites.TileWidth)
+	screen.Rows = h / uint(t.sprites.TileHeight)
 
 	return nil, screen
 }

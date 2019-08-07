@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
+	"raylibtinkering/ui"
 	"unicode/utf8"
 )
 
@@ -47,7 +48,7 @@ func NewViewport(w, h, x, y uint) *Viewport {
 		x:        x,
 		y:        y,
 		bordered: false,
-		border:   cCellBorder{TCOD_CHAR_VLINE, TCOD_CHAR_HLINE, TCOD_CHAR_NE, TCOD_CHAR_SE, TCOD_CHAR_SW, TCOD_CHAR_NW},
+		border:   cCellBorder{ui.TCOD_CHAR_VLINE, ui.TCOD_CHAR_HLINE, ui.TCOD_CHAR_NE, ui.TCOD_CHAR_SE, ui.TCOD_CHAR_SW, ui.TCOD_CHAR_NW},
 	}
 
 	for cY := uint(0); cY < h; cY++ {
@@ -85,19 +86,19 @@ func (v *Viewport) DrawBorder() {
 		return
 	}
 	for x := uint(0); x < v.width-1; x++ {
-		v.SetChar(v.border.H, position.Position{X: int(x), Y: 0}, ColourUiLines, ColourBg)
-		v.SetChar(v.border.H, position.Position{X: int(x), Y: int(v.height - 1)}, ColourUiLines, ColourBg)
+		v.SetChar(v.border.H, position.Position{X: int(x), Y: 0}, ui.ColourUiLines, ui.ColourBg)
+		v.SetChar(v.border.H, position.Position{X: int(x), Y: int(v.height - 1)}, ui.ColourUiLines, ui.ColourBg)
 	}
 
 	for y := uint(0); y < v.height-1; y++ {
-		v.SetChar(v.border.V, position.Position{X: 0, Y: int(y)}, ColourUiLines, ColourBg)
-		v.SetChar(v.border.V, position.Position{X: int(v.width - 1), Y: int(y)}, ColourUiLines, ColourBg)
+		v.SetChar(v.border.V, position.Position{X: 0, Y: int(y)}, ui.ColourUiLines, ui.ColourBg)
+		v.SetChar(v.border.V, position.Position{X: int(v.width - 1), Y: int(y)}, ui.ColourUiLines, ui.ColourBg)
 	}
 
-	v.SetChar(v.border.NE, position.Position{X: int(v.width - 1), Y: 0}, ColourUiLines, ColourBg)
-	v.SetChar(v.border.SE, position.Position{X: int(v.width - 1), Y: int(v.height - 1)}, ColourUiLines, ColourBg)
-	v.SetChar(v.border.SW, position.Position{X: 0, Y: int(v.height - 1)}, ColourUiLines, ColourBg)
-	v.SetChar(v.border.NW, position.Position{X: 0, Y: 0}, ColourUiLines, ColourBg)
+	v.SetChar(v.border.NE, position.Position{X: int(v.width - 1), Y: 0}, ui.ColourUiLines, ui.ColourBg)
+	v.SetChar(v.border.SE, position.Position{X: int(v.width - 1), Y: int(v.height - 1)}, ui.ColourUiLines, ui.ColourBg)
+	v.SetChar(v.border.SW, position.Position{X: 0, Y: int(v.height - 1)}, ui.ColourUiLines, ui.ColourBg)
+	v.SetChar(v.border.NW, position.Position{X: 0, Y: 0}, ui.ColourUiLines, ui.ColourBg)
 }
 
 func (v *Viewport) SetChar(r int, p position.Position, fg, bg rl.Color) {

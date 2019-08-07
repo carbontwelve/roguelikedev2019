@@ -4,6 +4,7 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
+	"raylibtinkering/ui"
 )
 
 /**
@@ -94,7 +95,7 @@ func (sev *simpleEvent) Renew(w *World, delay int) {
 func (sev *simpleEvent) Action(w *World) {
 	switch sev.EAction {
 	case PlayerTurn:
-		w.Ui.Statistics.SetRow("Turn: player", position.Position{1, 3}, rl.Orange, rl.Black)
+		w.e.screen.Get("Statistics").SetRow("Turn: player", position.Position{1, 3}, rl.Orange, rl.Black)
 
 		if w.NextTurnMove.Zero() {
 			// If no player input wait
@@ -139,7 +140,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterTurn:
 		e := w.Entities.Get(mev.NMons)
 		if e.Exists() {
-			w.Ui.Statistics.SetRow(fmt.Sprintf("Turn: %s", mev.NMons), position.Position{1, 3}, rl.Orange, rl.Black)
+			w.e.screen.Get("Statistics").SetRow(fmt.Sprintf("Turn: %s", mev.NMons), position.Position{1, 3}, rl.Orange, rl.Black)
 			e.Brain.HandleTurn(w, mev)
 		} else {
 			// We have died
@@ -148,7 +149,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterDeath:
 		e := w.Entities.Get(mev.NMons)
 		e.Name = "Dead " + e.Name
-		e.color = ColourBlood
+		e.color = ui.ColourBlood
 		e.char = '%'
 		e.RenderOrder = RoCorpse
 	}
