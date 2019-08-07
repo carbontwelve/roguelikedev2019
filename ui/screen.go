@@ -82,10 +82,7 @@ func (s *Screen) Unload() {
 
 func NewScreen(w, h uint, t *Tileset) (error, *Screen) {
 	screen := &Screen{dirty: true, width: w, height: h, components: make(map[string]*componentZOrder), drawOrder: make([]*componentZOrder, 0), tileset: t}
-
-	// @todo check tile width and height are > 0
 	screen.Cols = w / uint(t.sprites.TileWidth)
 	screen.Rows = h / uint(t.sprites.TileHeight)
-
 	return nil, screen
 }
