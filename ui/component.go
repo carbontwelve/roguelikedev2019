@@ -66,6 +66,31 @@ func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {
 	cell.fg = fg
 }
 
+func (c *Component) Clear() {
+
+	var (
+		xMin, xMax, yMin, yMax uint
+	)
+
+	if c.bordered {
+		xMin = 1
+		xMax = c.Width - 2
+		yMin = 1
+		yMax = c.Height - 2
+	} else {
+		xMin = 0
+		xMax = c.Width
+		yMin = 0
+		yMax = c.Height
+	}
+
+	for y := yMin; y < yMax; y++ {
+		for x := xMin; x < xMax; x++ {
+			c.cells[position.Position{X: int(x), Y: int(y)}].Reset()
+		}
+	}
+}
+
 func (c *Component) ClearRow(y uint) {
 	var (
 		xMin, xMax uint

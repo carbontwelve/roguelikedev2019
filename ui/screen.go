@@ -52,10 +52,10 @@ func (s *Screen) Draw() {
 	}
 
 	for _, kv := range s.drawOrder {
-		// fmt.Println("At zOrder (", i,") Drawing: ", kv.c.Name, " Expected zOrder: ", kv.order )
 		for _, cell := range kv.c.cells {
 			s.tileset.Draw(cell.char, cell.GetDrawPosition(), cell.fg, cell.bg)
 		}
+		kv.c.Clear()
 	}
 
 }

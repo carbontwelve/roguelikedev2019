@@ -72,6 +72,8 @@ func NewWorld(e *Engine) *World {
 	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6), 20)
 	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0), 25)
 
+	e.screen.Set(ui2.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0), 9999)
+
 	e.screen.Get("MessageLog").SetBorderStyle(ui2.SingleWallBorder)
 	e.screen.Get("Statistics").SetBorderStyle(ui2.SingleWallBorder)
 
@@ -143,30 +145,14 @@ func (w World) Draw(dt float32) {
 		}
 	}
 
-	// Draw Message Log UI
-	//for _, c := range w.Ui.MessageLog.cells {
-	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	//}
-
-	// Draw Ui.Statistics
-	//for _, c := range w.Ui.Statistics.cells {
-	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	//}
-
-	// Draw Ui.MainWindow
-	//for _, c := range w.Ui.MainWindow.cells {
-	//	w.e.font.Draw(c.char, c.GetDrawPosition().Vector2(w.e.font.sprites.TileWidth, w.e.font.sprites.TileHeight), c.fg)
-	//}
-
 	// Tmp Draw Mouse cursor for debug
-	//var CursorColour rl.Color
-	//if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-	//	CursorColour = ui2.ColourWallFOV
-	//} else {
-	//	CursorColour = ui2.ColourPlayer
-	//}
-	//w.e.font.Draw(178, rl.Vector2{X: float32(w.MouseX * 10), Y: float32(w.MouseY * 10)}, CursorColour)
-
+	var CursorColour rl.Color
+	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		CursorColour = ui2.ColourWallFOV
+	} else {
+		CursorColour = ui2.ColourPlayer
+	}
+	w.e.screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui2.ColourNC)
 }
 
 func (w *World) AddMessage(msg SimpleMessage) {
