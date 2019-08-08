@@ -7,13 +7,13 @@ import (
 
 type Camera struct {
 	offset      position.Position
-	origin      *Component
-	destination *Component
+	origin      ComponentI
+	destination ComponentI
 }
 
 func (c *Camera) FollowTarget(p position.Position) {
-	c.offset.X = p.X - int(c.destination.Width/2)
-	c.offset.Y = p.Y - int(c.destination.Height/2)
+	c.offset.X = p.X - int(c.destination.GetWidth()/2)
+	c.offset.Y = p.Y - int(c.destination.GetHeight()/2)
 
 	if c.offset.X < 0 {
 		c.offset.X = 0
@@ -22,28 +22,28 @@ func (c *Camera) FollowTarget(p position.Position) {
 		c.offset.Y = 0
 	}
 
-	for Y := 0; Y < int(c.destination.Height); Y++ {
-		for X := 0; X < int(c.destination.Width); X++ {
+	for Y := 0; Y < int(c.destination.GetHeight()); Y++ {
+		for X := 0; X < int(c.destination.GetWidth()); X++ {
 			offX := X + c.offset.X
 			offY := Y + c.offset.Y
 
-			if offY >= int(c.origin.Height) {
-				offY = int(c.origin.Height) - 1
+			if offY >= int(c.origin.GetHeight()) {
+				offY = int(c.origin.GetHeight()) - 1
 			}
 
-			if offX >= int(c.origin.Width) { //80 wide = 0 - 79
-				offX = int(c.origin.Width) - 1
+			if offX >= int(c.origin.GetWidth()) { //80 wide = 0 - 79
+				offX = int(c.origin.GetWidth()) - 1
 			}
 
-			if uint(offX) > c.origin.Width {
-				panic(fmt.Sprintf("The Offset X (%d) is greater than the destination width (%d)", offX, c.origin.Width))
+			if uint(offX) > c.origin.GetWidth() {
+				panic(fmt.Sprintf("The Offset X (%d) is greater than the destination width (%d)", offX, c.origin.GetWidth()))
 			}
 
-			if uint(offY) > c.origin.Height {
-				panic(fmt.Sprintf("The Offset Y (%d) is greater than the destination height (%d)", offY, c.origin.Height))
+			if uint(offY) > c.origin.GetHeight() {
+				panic(fmt.Sprintf("The Offset Y (%d) is greater than the destination height (%d)", offY, c.origin.GetHeight()))
 			}
 
-			cell := c.origin.cells[position.Position{X: offX, Y: offY}]
+			cell := c.origin.GetCells()[position.Position{X: offX, Y: offY}]
 
 			if cell == nil {
 				panic(fmt.Sprintf("The Cell at (%d,%d) is nil", offX, offY))
@@ -55,10 +55,10 @@ func (c *Camera) FollowTarget(p position.Position) {
 }
 
 func (c Camera) Debug() {
-	fmt.Println(fmt.Sprintf("Camera offset (%d,%d), Viewport (%d x %d), Max (%d, %d)", c.offset.X, c.offset.Y, c.destination.Width, c.destination.Height, c.origin.Width, c.origin.Height))
+	fmt.Println(fmt.Sprintf("Camera offset (%d,%d), Viewport (%d x %d), Max (%d, %d)", c.offset.X, c.offset.Y, c.destination.GetWidth(), c.destination.GetHeight(), c.origin.GetWidth(), c.origin.GetHeight()))
 }
 
-func NewCamera(origin, destination *Component) *Camera {
+func NewCamera(origin, destination ComponentI) *Camera {
 	camera := &Camera{
 		origin:      origin,
 		destination: destination,

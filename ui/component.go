@@ -6,6 +6,27 @@ import (
 	"unicode/utf8"
 )
 
+type ComponentI interface {
+	GetCells() map[position.Position]*Cell
+	IsVisible() bool
+	AutoClears() bool
+	GetName() string
+	GetWidth() uint
+	GetHeight() uint
+	GetInnerHeight() uint
+	GetInnerWidth() uint
+	SetBorderStyle(bs BorderStyle)
+	DrawBorder()
+	SetChar(r uint, p position.Position, fg, bg rl.Color)
+	Clear()
+	ClearRow(y uint)
+	ClearCol(x uint, r rune)
+	SetRow(str string, p position.Position, fg, bg rl.Color)
+	SetString(str string, p position.Position, fg, bg rl.Color)
+	SetCamera(cam *Camera)
+	SetAutoClear(b bool)
+}
+
 type BorderStyle struct {
 	V, H, NE, SE, SW, NW uint
 }
@@ -28,6 +49,41 @@ type Component struct {
 	camera           *Camera
 	visible          bool
 	autoClear        bool
+}
+
+func (c Component) GetName() string {
+	return c.Name
+}
+
+func (c Component) GetWidth() uint {
+	return c.Width
+}
+
+func (c Component) GetHeight() uint {
+	return c.Height
+}
+
+func (c Component) GetInnerHeight() uint {
+	if c.bordered == false {
+		return c.Height
+	}
+
+	return c.Height - 2
+}
+
+func (c Component) GetInnerWidth() uint {
+	if c.bordered == false {
+		return c.Width
+	}
+	return c.Width - 2
+}
+
+func (c Component) IsVisible() bool {
+	return c.visible
+}
+
+func (c Component) AutoClears() bool {
+	return c.autoClear
 }
 
 func (c *Component) SetBorderStyle(bs BorderStyle) {
@@ -142,6 +198,10 @@ func (c *Component) SetCamera(cam *Camera) {
 
 func (c *Component) SetAutoClear(b bool) {
 	c.autoClear = b
+}
+
+func (c Component) GetCells() map[position.Position]*Cell {
+	return c.cells
 }
 
 //

@@ -72,8 +72,11 @@ func NewWorld(e *Engine) *World {
 	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
 	// @todo refactor DungeonWidth/Height to something more practical
+
+	msgLog := NewMessageLog("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6)
+
 	e.screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
-	e.screen.Set(ui.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6, true), 20)
+	e.screen.Set(msgLog, 20)
 	e.screen.Set(ui.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
 	e.screen.Set(ui.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
 
@@ -96,7 +99,7 @@ func NewWorld(e *Engine) *World {
 		FOVRecompute: true,
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
-		MessageLog:   NewMessageLog(0, position.DungeonWidth, 4),
+		MessageLog:   msgLog,
 		Camera:       camera,
 	}
 	world.InitWorld()
@@ -243,11 +246,11 @@ func (w *World) Update(dt float32) {
 	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.ColourFg, ui.ColourNC)
 
 	// Write Messages to Ui.MessageLog
-	uiMessageLog := w.e.screen.Get("MessageLog")
-	for y, msg := range w.MessageLog.Messages {
-		uiMessageLog.ClearRow(uint(1 + y))
-		uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)
-	}
+	//uiMessageLog := w.e.screen.Get("MessageLog")
+	//for y, msg := range w.MessageLog.Messages {
+	//	uiMessageLog.ClearRow(uint(1 + y))
+	//	uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)
+	//}
 }
 
 func (w World) Save(filename string) error {

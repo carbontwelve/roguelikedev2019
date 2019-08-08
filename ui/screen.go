@@ -6,7 +6,7 @@ import (
 )
 
 type componentZOrder struct {
-	c     *Component
+	c     ComponentI
 	order int
 }
 
@@ -42,7 +42,7 @@ func (s *Screen) Draw() {
 		s.drawOrder = make([]*componentZOrder, 0)
 
 		for _, v := range s.components {
-			if v.c.visible {
+			if v.c.IsVisible() {
 				s.drawOrder = append(s.drawOrder, v)
 			}
 		}
@@ -54,22 +54,22 @@ func (s *Screen) Draw() {
 	}
 
 	for _, kv := range s.drawOrder {
-		for _, cell := range kv.c.cells {
+		for _, cell := range kv.c.GetCells() {
 			s.tileset.Draw(cell.char, cell.GetDrawPosition(), cell.fg, cell.bg)
 		}
 
-		if kv.c.autoClear == true {
+		if kv.c.AutoClears() == true {
 			kv.c.Clear()
 		}
 	}
 }
 
-func (s Screen) Get(k string) *Component {
+func (s Screen) Get(k string) ComponentI {
 	return s.components[k].c
 }
 
-func (s *Screen) Set(c *Component, zIndex int) {
-	s.components[c.Name] = &componentZOrder{c: c, order: zIndex}
+func (s *Screen) Set(c ComponentI, zIndex int) {
+	s.components[c.GetName()] = &componentZOrder{c: c, order: zIndex}
 	s.dirty = true
 }
 
