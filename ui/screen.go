@@ -57,7 +57,10 @@ func (s *Screen) Draw() {
 		for _, cell := range kv.c.cells {
 			s.tileset.Draw(cell.char, cell.GetDrawPosition(), cell.fg, cell.bg)
 		}
-		kv.c.Clear()
+
+		if kv.c.autoClear == true {
+			kv.c.Clear()
+		}
 	}
 }
 

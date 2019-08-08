@@ -18,6 +18,7 @@ func main() {
 	rl.InitWindow(screenWidth, screenHeight, "/r/roguelikedev 2019")
 	rl.SetTargetFPS(60)
 
+	ui.LoadTheme(ui.ThemeFlat8)
 	ui.LinkColours()
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
@@ -35,6 +36,19 @@ func main() {
 		//if rl.IsKeyPressed(rl.KeyF) {
 		//	rl.ToggleFullscreen()
 		//}
+
+		if rl.IsKeyPressed(rl.KeyF) {
+			fmt.Println(ui.CurrentTheme.Name)
+
+			if ui.CurrentTheme.Name == "Flat" {
+				ui.LoadTheme(ui.ThemeFishTank8)
+			} else if ui.CurrentTheme.Name == "Fish" {
+				ui.LoadTheme(ui.ThemeAmberTerm)
+			} else {
+				ui.LoadTheme(ui.ThemeFlat8)
+			}
+			ui.LinkColours()
+		}
 
 		state.Update(frameTime)
 
