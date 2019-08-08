@@ -31,14 +31,17 @@ func (s LobbyState) Draw(dt float32) {
 
 func (s LobbyState) DrawColourSquares() {
 
-	order := [16]string{
-		"ColourAnsiWhite", "ColourAnsiLightGrey", "ColourAnsiGrey", "ColourAnsiBlack",
-		"ColourAnsiBlue", "ColourAnsiLightBlue",
-		"ColourAnsiGreen", "ColourAnsiLightGreen",
-		"ColourAnsiCyan", "ColourAnsiLightCyan",
-		"ColourAnsiRed", "ColourAnsiLightRed",
-		"ColourAnsiPurple", "ColourAnsiLightPurple",
-		"ColourAnsiYellow", "ColourAnsiLightYellow",
+	colours := ui.LoadedThemeRepository.GetCurrentTheme().AsRaylibColor()
+
+	order := [16]uint{
+		7, 15,
+		8, 0,
+		4, 12,
+		2, 10,
+		6, 14,
+		1, 9,
+		5, 13,
+		3, 11,
 	}
 
 	square := []uint{
@@ -59,11 +62,7 @@ func (s LobbyState) DrawColourSquares() {
 	for _, c := range order {
 		for y := 0; y < 5; y++ {
 			for x := 0; x < 5; x++ {
-				bgColour := ui.ColourNC
-				if ui.CurrentTheme.Colours[c] == ui.ColourAnsiBlack {
-					bgColour = ui.ColourAnsiLightGrey
-				}
-				viewport.SetChar(square[y*5+x], position.Position{xOff + x, yOff + y}, ui.CurrentTheme.Colours[c], bgColour)
+				viewport.SetChar(square[y*5+x], position.Position{xOff + x, yOff + y}, colours[c], ui.ColourNC)
 			}
 		}
 
