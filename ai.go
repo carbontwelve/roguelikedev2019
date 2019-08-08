@@ -54,6 +54,7 @@ func (b PlayerBrain) HandleTurn(w *World, ev event) {
 				// Player is moving and destination is unblocked by terrain lets move
 				// to the destination position
 				b.owner.MoveTo(at)
+				w.Camera.FollowTarget(b.owner.position)
 			}
 			w.FOVRecompute = true
 		}

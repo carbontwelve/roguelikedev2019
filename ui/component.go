@@ -25,6 +25,9 @@ type Component struct {
 	border           BorderStyle
 	bordered         bool
 	cells            map[position.Position]*Cell
+	camera           *Camera
+	visible          bool
+	autoClear        bool
 }
 
 func (c *Component) SetBorderStyle(bs BorderStyle) {
@@ -67,7 +70,6 @@ func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {
 }
 
 func (c *Component) Clear() {
-
 	var (
 		xMin, xMax, yMin, yMax uint
 	)
@@ -134,17 +136,27 @@ func (c *Component) SetString(str string, p position.Position, fg, bg rl.Color) 
 	}
 }
 
+func (c *Component) SetCamera(cam *Camera) {
+	c.camera = cam
+}
+
+func (c *Component) SetAutoClear(b bool) {
+	c.autoClear = b
+}
+
 //
 // Constructor
 //
-func NewComponent(name string, w, h uint, offX, offY int) *Component {
+func NewComponent(name string, w, h uint, offX, offY int, visible bool) *Component {
 	component := &Component{
-		Name:    name,
-		Width:   w,
-		Height:  h,
-		OffsetX: offX,
-		OffsetY: offY,
-		cells:   make(map[position.Position]*Cell),
+		Name:      name,
+		Width:     w,
+		Height:    h,
+		OffsetX:   offX,
+		OffsetY:   offY,
+		cells:     make(map[position.Position]*Cell),
+		visible:   visible,
+		autoClear: true,
 	}
 
 	for cY := uint(0); cY < h; cY++ {

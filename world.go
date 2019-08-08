@@ -29,6 +29,7 @@ type World struct {
 	MouseX       int
 	MouseY       int
 	MouseHover   bool
+	Camera       *ui2.Camera
 }
 
 func (w *World) InitWorld() {
@@ -45,6 +46,9 @@ func (w *World) InitWorld() {
 
 	// Set blocked tiles from terrain
 	w.Terrain.SetFOVBlocked(w.FovMap)
+
+	// Set camera initial position
+	w.Camera.FollowTarget(w.Entities.Get("player").position)
 
 	if w.Depth == 1 {
 		w.Events = &eventQueue{}
@@ -68,14 +72,17 @@ func NewWorld(e *Engine) *World {
 	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
 	// @todo refactor DungeonWidth/Height to something more practical
-	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0), 10)
-	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6), 20)
-	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0), 25)
+	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
+	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6, true), 20)
+	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
+	e.screen.Set(ui2.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
 
-	e.screen.Set(ui2.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0), 9999)
+	e.screen.Set(ui2.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 9999)
 
 	e.screen.Get("MessageLog").SetBorderStyle(ui2.SingleWallBorder)
 	e.screen.Get("Statistics").SetBorderStyle(ui2.SingleWallBorder)
+
+	camera := ui2.NewCamera(e.screen.Get("Map"), e.screen.Get("Viewport"))
 
 	world := &World{
 		NextTurnMove: position.Position{0, 0},
@@ -90,6 +97,7 @@ func NewWorld(e *Engine) *World {
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
 		MessageLog:   NewMessageLog(0, position.DungeonWidth, 4),
+		Camera:       camera,
 	}
 	world.InitWorld()
 	return world
@@ -114,7 +122,7 @@ func (w *World) PopIEvent() iEvent {
 func (w World) Draw(dt float32) {
 	rl.ClearBackground(ui2.ColourBg)
 
-	uiViewport := w.e.screen.Get("Viewport")
+	uiMap := w.e.screen.Get("Map")
 
 	// Draw Terrain
 	for x := 0; x < w.Terrain.w; x++ {
@@ -124,15 +132,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					uiViewport.SetChar(178, pos, ui2.ColourWallFOV, ui2.ColourNC)
+					uiMap.SetChar(178, pos, ui2.ColourWallFOV, ui2.ColourNC)
 				} else {
-					uiViewport.SetChar('.', pos, ui2.ColourFloorFOV, ui2.ColourNC)
+					uiMap.SetChar('.', pos, ui2.ColourFloorFOV, ui2.ColourNC)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					uiViewport.SetChar(178, pos, ui2.ColourWall, ui2.ColourNC)
+					uiMap.SetChar(178, pos, ui2.ColourWall, ui2.ColourNC)
 				} else {
-					uiViewport.SetChar('.', pos, ui2.ColourFloor, ui2.ColourNC)
+					uiMap.SetChar('.', pos, ui2.ColourFloor, ui2.ColourNC)
 				}
 			}
 		}
@@ -141,9 +149,11 @@ func (w World) Draw(dt float32) {
 	// Draw Entities
 	for _, entity := range w.Entities.SortedByRenderOrder() {
 		if w.FovMap.IsVisible(entity.position) {
-			uiViewport.SetChar(entity.char, entity.position, entity.color, ui2.ColourNC)
+			uiMap.SetChar(entity.char, entity.position, entity.color, ui2.ColourNC)
 		}
 	}
+
+	w.Camera.FollowTarget(w.Entities.Get("player").position)
 
 	// Tmp Draw Mouse cursor for debug
 	var CursorColour rl.Color

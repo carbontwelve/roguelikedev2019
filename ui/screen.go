@@ -42,7 +42,9 @@ func (s *Screen) Draw() {
 		s.drawOrder = make([]*componentZOrder, 0)
 
 		for _, v := range s.components {
-			s.drawOrder = append(s.drawOrder, v)
+			if v.c.visible {
+				s.drawOrder = append(s.drawOrder, v)
+			}
 		}
 
 		sort.Slice(s.drawOrder, func(i, j int) bool {
@@ -57,7 +59,6 @@ func (s *Screen) Draw() {
 		}
 		kv.c.Clear()
 	}
-
 }
 
 func (s Screen) Get(k string) *Component {
