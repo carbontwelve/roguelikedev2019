@@ -19,6 +19,10 @@ func main() {
 	rl.SetTargetFPS(60)
 
 	ui.LoadedThemeRepository, _ = ui.NewThemeRepository("./themes/")
+	err := ui.LoadedThemeRepository.SetCurrentTheme("Flat")
+	if err != nil {
+		panic(err)
+	}
 	ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
 	ui.LinkWorkingColourPalette()
 

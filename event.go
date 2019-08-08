@@ -114,7 +114,7 @@ func (sev *simpleEvent) Action(w *World) {
 		playerEntity.Fighter.Heal(1)
 		sev.Renew(w, 500)
 
-		w.AddMessage(SimpleMessage{Message: "You feel your health improving", Colour: rl.Green})
+		w.AddMessage(SimpleMessage{Message: "You feel your health improving", Colour: ui.ColourAnsiGreen})
 	}
 }
 

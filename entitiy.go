@@ -5,6 +5,7 @@ import (
 	"github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"raylibtinkering/position"
+	"raylibtinkering/ui"
 	"sort"
 	"strconv"
 	"strings"
@@ -68,7 +69,7 @@ func (f *Fighter) TakeDamage(amount int) InteractionResults {
 	if f.HP == 0 {
 		result := make(InteractionResult)
 		result["death"] = f.owner
-		result["message"] = SimpleMessage{Message: fmt.Sprintf("%s is dead.", f.owner.Name), Colour: rl.Red}
+		result["message"] = SimpleMessage{Message: fmt.Sprintf("%s is dead.", f.owner.Name), Colour: ui.ColourAnsiRed}
 		ret.Push(result)
 	}
 
@@ -100,7 +101,7 @@ func (f Fighter) Attack(target *Entity) InteractionResults {
 			msg = fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage)
 		}
 
-		result["message"] = SimpleMessage{Message: msg, Colour: rl.Orange}
+		result["message"] = SimpleMessage{Message: msg, Colour: ui.ColourForeground}
 		ret.Push(result)
 		ret.Merge(target.Fighter.TakeDamage(damage))
 	} else {
@@ -112,7 +113,7 @@ func (f Fighter) Attack(target *Entity) InteractionResults {
 			msg = fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name)
 		}
 
-		result["message"] = SimpleMessage{Message: msg, Colour: rl.Orange}
+		result["message"] = SimpleMessage{Message: msg, Colour: ui.ColourForeground}
 		ret.Push(result)
 	}
 

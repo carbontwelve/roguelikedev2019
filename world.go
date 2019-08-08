@@ -5,7 +5,7 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
-	ui2 "raylibtinkering/ui"
+	ui "raylibtinkering/ui"
 	"time"
 )
 
@@ -29,7 +29,7 @@ type World struct {
 	MouseX       int
 	MouseY       int
 	MouseHover   bool
-	Camera       *ui2.Camera
+	Camera       *ui.Camera
 }
 
 func (w *World) InitWorld() {
@@ -41,7 +41,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ui2.ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ui.ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -72,17 +72,17 @@ func NewWorld(e *Engine) *World {
 	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
 	// @todo refactor DungeonWidth/Height to something more practical
-	e.screen.Set(ui2.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
-	e.screen.Set(ui2.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6, true), 20)
-	e.screen.Set(ui2.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
-	e.screen.Set(ui2.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
+	e.screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
+	e.screen.Set(ui.NewComponent("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6, true), 20)
+	e.screen.Set(ui.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
+	e.screen.Set(ui.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
 
-	e.screen.Set(ui2.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 9999)
+	e.screen.Set(ui.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 9999)
 
-	e.screen.Get("MessageLog").SetBorderStyle(ui2.SingleWallBorder)
-	e.screen.Get("Statistics").SetBorderStyle(ui2.SingleWallBorder)
+	e.screen.Get("MessageLog").SetBorderStyle(ui.SingleWallBorder)
+	e.screen.Get("Statistics").SetBorderStyle(ui.SingleWallBorder)
 
-	camera := ui2.NewCamera(e.screen.Get("Map"), e.screen.Get("Viewport"))
+	camera := ui.NewCamera(e.screen.Get("Map"), e.screen.Get("Viewport"))
 
 	world := &World{
 		NextTurnMove: position.Position{0, 0},
@@ -120,7 +120,7 @@ func (w *World) PopIEvent() iEvent {
 }
 
 func (w World) Draw(dt float32) {
-	rl.ClearBackground(ui2.ColourBg)
+	rl.ClearBackground(ui.ColourBg)
 
 	uiMap := w.e.screen.Get("Map")
 
@@ -132,15 +132,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui2.ColourWallFOV, ui2.ColourNC)
+					uiMap.SetChar(178, pos, ui.ColourWallFOV, ui.ColourNC)
 				} else {
-					uiMap.SetChar('.', pos, ui2.ColourFloorFOV, ui2.ColourNC)
+					uiMap.SetChar('.', pos, ui.ColourFloorFOV, ui.ColourNC)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui2.ColourWall, ui2.ColourNC)
+					uiMap.SetChar(178, pos, ui.ColourWall, ui.ColourNC)
 				} else {
-					uiMap.SetChar('.', pos, ui2.ColourFloor, ui2.ColourNC)
+					uiMap.SetChar('.', pos, ui.ColourFloor, ui.ColourNC)
 				}
 			}
 		}
@@ -149,7 +149,7 @@ func (w World) Draw(dt float32) {
 	// Draw Entities
 	for _, entity := range w.Entities.SortedByRenderOrder() {
 		if w.FovMap.IsVisible(entity.position) {
-			uiMap.SetChar(entity.char, entity.position, entity.color, ui2.ColourNC)
+			uiMap.SetChar(entity.char, entity.position, entity.color, ui.ColourNC)
 		}
 	}
 
@@ -158,11 +158,11 @@ func (w World) Draw(dt float32) {
 	// Tmp Draw Mouse cursor for debug
 	var CursorColour rl.Color
 	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		CursorColour = ui2.ColourWallFOV
+		CursorColour = ui.ColourWallFOV
 	} else {
-		CursorColour = ui2.ColourPlayer
+		CursorColour = ui.ColourPlayer
 	}
-	w.e.screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui2.ColourNC)
+	w.e.screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
 }
 
 func (w *World) AddMessage(msg SimpleMessage) {
@@ -238,15 +238,15 @@ func (w *World) Update(dt float32) {
 	// Write to Ui.Statistics
 	uiStatistics := w.e.screen.Get("Statistics")
 
-	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui2.ColourFg, ui2.ColourNC)
-	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui2.ColourFg, ui2.ColourNC)
-	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui2.ColourFg, ui2.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.ColourFg, ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.ColourFg, ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.ColourFg, ui.ColourNC)
 
 	// Write Messages to Ui.MessageLog
 	uiMessageLog := w.e.screen.Get("MessageLog")
 	for y, msg := range w.MessageLog.Messages {
 		uiMessageLog.ClearRow(uint(1 + y))
-		uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui2.ColourNC)
+		uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)
 	}
 }
 
