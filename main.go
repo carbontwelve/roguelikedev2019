@@ -19,8 +19,8 @@ func main() {
 	rl.SetTargetFPS(60)
 
 	ui.LoadedThemeRepository, _ = ui.NewThemeRepository("./themes/")
-	//ui.LoadTheme(ui.ThemeFlat8)
-	//ui.LinkColours()
+	ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
+	ui.LinkWorkingColourPalette()
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := newEngine()

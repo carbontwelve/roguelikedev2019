@@ -2,37 +2,6 @@ package ui
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-//type ColourTheme struct {
-//	Name    string
-//	Colours map[string]rl.Color
-//}
-
-//var CurrentTheme ColourTheme
-
-// From https://www.gnome-look.org/p/1112201/
-//var ThemeAmberTerm = ColourTheme{
-//	Name: "AmberTerm",
-//	Colours: map[string]rl.Color{
-//		"ColourAnsiBlack":     rl.Color{15, 14, 13, 255},    // 01
-//		"ColourAnsiRed":       rl.Color{140, 41, 32, 255},   // 02
-//		"ColourAnsiGreen":     rl.Color{168, 83, 52, 255},   // 03
-//		"ColourAnsiYellow":    rl.Color{140, 55, 21, 255},   // 04
-//		"ColourAnsiBlue":      rl.Color{168, 67, 0, 255},    // 05
-//		"ColourAnsiPurple":    rl.Color{150, 92, 21, 255},   // 06
-//		"ColourAnsiCyan":      rl.Color{168, 126, 0, 255},   // 07
-//		"ColourAnsiLightGrey": rl.Color{161, 150, 133, 255}, // 08
-//
-//		"ColourAnsiGrey":        rl.Color{26, 24, 21, 255},    // 09
-//		"ColourAnsiLightRed":    rl.Color{227, 66, 52, 255},   // 10
-//		"ColourAnsiLightGreen":  rl.Color{255, 127, 80, 255},  // 11
-//		"ColourAnsiLightYellow": rl.Color{226, 88, 34, 255},   // 12
-//		"ColourAnsiLightBlue":   rl.Color{255, 102, 0, 255},   // 13
-//		"ColourAnsiLightPurple": rl.Color{237, 145, 33, 255},  // 14
-//		"ColourAnsiLightCyan":   rl.Color{255, 191, 0, 255},   // 15
-//		"ColourAnsiWhite":       rl.Color{247, 231, 206, 255}, // 16
-//	},
-//}
-
 // No colour/transparent
 var ColourNC = rl.Color{R: 0, G: 0, B: 0, A: 0}
 
