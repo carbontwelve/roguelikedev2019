@@ -1,0 +1,24 @@
+{
+  "name": "Flat",
+  "author": "https://github.com/Mayccoll/Gogh",
+  "color": [
+    "#2c3e50",
+    "#c0392b",
+    "#27ae60",
+    "#f39c12",
+    "#2980b9",
+    "#8e44ad",
+    "#16a085",
+    "#bdc3c7",
+    "#34495e",
+    "#e74c3c",
+    "#2ecc71",
+    "#f1c40f",
+    "#3498db",
+    "#9b59b6",
+    "#2AA198",
+    "#ecf0f1"
+  ],
+  "foreground": "#1abc9c",
+  "background": "#1F2D3A"
+}

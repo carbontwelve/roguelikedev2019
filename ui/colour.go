@@ -33,54 +33,6 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 //	},
 //}
 
-// From https://github.com/devinceble/Elementary-OS-Terminal-Colors/blob/master/content/new.md#flat
-//var ThemeFlat8 = ColourTheme{
-//	Name: "Flat",
-//	Colours: map[string]rl.Color{
-//		"ColourAnsiBlack":     rl.Color{45, 62, 80, 255},    // 01
-//		"ColourAnsiRed":       rl.Color{193, 57, 41, 255},   // 02
-//		"ColourAnsiGreen":     rl.Color{39, 174, 97, 255},   // 03
-//		"ColourAnsiYellow":    rl.Color{243, 156, 17, 255},  // 04
-//		"ColourAnsiBlue":      rl.Color{43, 129, 180, 255},  // 05
-//		"ColourAnsiPurple":    rl.Color{143, 67, 175, 255},  // 06
-//		"ColourAnsiCyan":      rl.Color{22, 160, 134, 255},  // 07
-//		"ColourAnsiLightGrey": rl.Color{190, 195, 199, 255}, // 08
-//
-//		"ColourAnsiGrey":        rl.Color{52, 73, 94, 255},    // 09
-//		"ColourAnsiLightRed":    rl.Color{232, 76, 61, 255},   // 10
-//		"ColourAnsiLightGreen":  rl.Color{44, 204, 114, 255},  // 11
-//		"ColourAnsiLightYellow": rl.Color{241, 196, 17, 255},  // 12
-//		"ColourAnsiLightBlue":   rl.Color{51, 152, 220, 255},  // 13
-//		"ColourAnsiLightPurple": rl.Color{154, 89, 179, 255},  // 14
-//		"ColourAnsiLightCyan":   rl.Color{40, 161, 152, 255},  // 15
-//		"ColourAnsiWhite":       rl.Color{236, 240, 241, 255}, // 16
-//	},
-//}
-
-// From https://raw.githubusercontent.com/Mayccoll/Gogh/master/images/themes/fishtank.jpg
-//var ThemeFishTank8 = ColourTheme{
-//	Name: "Fish",
-//	Colours: map[string]rl.Color{
-//		"ColourAnsiBlack":     rl.Color{4, 7, 60, 255},      // 01
-//		"ColourAnsiRed":       rl.Color{198, 0, 75, 255},    // 02
-//		"ColourAnsiGreen":     rl.Color{172, 241, 88, 255},  // 03
-//		"ColourAnsiYellow":    rl.Color{255, 205, 94, 255},  // 04
-//		"ColourAnsiBlue":      rl.Color{81, 95, 184, 255},   // 05
-//		"ColourAnsiPurple":    rl.Color{151, 110, 130, 255}, // 06
-//		"ColourAnsiCyan":      rl.Color{149, 135, 98, 255},  // 07
-//		"ColourAnsiLightGrey": rl.Color{236, 240, 252, 255}, // 08
-//
-//		"ColourAnsiGrey":        rl.Color{108, 91, 48, 255},   // 09
-//		"ColourAnsiLightRed":    rl.Color{218, 75, 137, 255},  // 10
-//		"ColourAnsiLightGreen":  rl.Color{219, 255, 168, 255}, // 11
-//		"ColourAnsiLightYellow": rl.Color{252, 230, 170, 255}, // 12
-//		"ColourAnsiLightBlue":   rl.Color{178, 190, 250, 255}, // 13
-//		"ColourAnsiLightPurple": rl.Color{253, 165, 205, 255}, // 14
-//		"ColourAnsiLightCyan":   rl.Color{165, 190, 135, 255}, // 15
-//		"ColourAnsiWhite":       rl.Color{246, 255, 236, 255}, // 16
-//	},
-//}
-
 // No colour/transparent
 var ColourNC = rl.Color{R: 0, G: 0, B: 0, A: 0}
 
