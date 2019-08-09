@@ -112,6 +112,14 @@ func (t *ThemeRepository) Next() {
 	}
 }
 
+func (t *ThemeRepository) Prev() {
+	if int(t.idx) > 0 {
+		t.idx--
+	} else {
+		t.idx = uint(len(t.order) - 1)
+	}
+}
+
 func (t *ThemeRepository) loadThemes() error {
 	files, readDirError := ioutil.ReadDir(t.path)
 	if readDirError != nil {

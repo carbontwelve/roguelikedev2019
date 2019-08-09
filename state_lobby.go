@@ -82,7 +82,7 @@ func (s *LobbyState) Update(dt float32) {
 		s.e.ChangeState(NewWorld(s.e))
 	}
 
-	if rl.IsKeyPressed(rl.KeyF) {
+	if rl.IsKeyPressed(rl.KeyLeft) || rl.IsKeyPressed(rl.KeyRight) {
 		s.e.screen.Get("Viewport").Clear()
 		s.DrawColourSquares()
 	}

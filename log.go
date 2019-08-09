@@ -38,6 +38,7 @@ func (mL *MessageLog) AddMessage(m Message) {
 		mL.Messages = append(mL.Messages, Message{Turn: m.Turn, Message: line, Colour: m.Colour})
 	}
 
+	// Draw message buffer to component
 	for y, msg := range mL.Messages {
 		mL.ClearRow(uint(1 + y))
 		mL.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)

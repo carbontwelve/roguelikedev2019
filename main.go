@@ -42,7 +42,11 @@ func main() {
 		//	rl.ToggleFullscreen()
 		//}
 
-		if rl.IsKeyPressed(rl.KeyF) {
+		if rl.IsKeyPressed(rl.KeyLeft) {
+			ui.LoadedThemeRepository.Prev()
+			ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
+			ui.LinkWorkingColourPalette()
+		} else if rl.IsKeyPressed(rl.KeyRight) {
 			ui.LoadedThemeRepository.Next()
 			ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
 			ui.LinkWorkingColourPalette()

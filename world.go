@@ -244,13 +244,6 @@ func (w *World) Update(dt float32) {
 	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.ColourFg, ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.ColourFg, ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.ColourFg, ui.ColourNC)
-
-	// Write Messages to Ui.MessageLog
-	//uiMessageLog := w.e.screen.Get("MessageLog")
-	//for y, msg := range w.MessageLog.Messages {
-	//	uiMessageLog.ClearRow(uint(1 + y))
-	//	uiMessageLog.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)
-	//}
 }
 
 func (w World) Save(filename string) error {
