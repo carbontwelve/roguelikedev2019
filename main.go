@@ -61,7 +61,7 @@ func main() {
 		state.Draw(frameTime)
 		game.screen.Draw()
 
-		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.ColourFg)
+		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])
 		rl.EndDrawing()
 
 		if state.ShouldQuit() {

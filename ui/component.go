@@ -100,19 +100,19 @@ func (c *Component) DrawBorder() {
 		return
 	}
 	for x := uint(0); x < c.Width-1; x++ {
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, ColourUiLines, ColourBg)
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, ColourUiLines, ColourBg)
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, GameColours["UiLines"], GameColours["bg"])
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
 	}
 
 	for y := uint(0); y < c.Height-1; y++ {
-		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, ColourUiLines, ColourBg)
-		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, ColourUiLines, ColourBg)
+		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, GameColours["UiLines"], GameColours["bg"])
+		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, GameColours["UiLines"], GameColours["bg"])
 	}
 
-	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, ColourUiLines, ColourBg)
-	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, ColourUiLines, ColourBg)
-	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, ColourUiLines, ColourBg)
-	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, ColourUiLines, ColourBg)
+	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, GameColours["UiLines"], GameColours["bg"])
+	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
+	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
+	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, GameColours["UiLines"], GameColours["bg"])
 }
 
 func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {

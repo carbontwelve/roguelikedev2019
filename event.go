@@ -4,7 +4,6 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
-	"raylibtinkering/ui"
 )
 
 /**
@@ -114,7 +113,7 @@ func (sev *simpleEvent) Action(w *World) {
 		playerEntity.Fighter.Heal(1)
 		sev.Renew(w, 500)
 
-		w.AddMessage(SimpleMessage{Message: "You feel your health improving", Colour: ui.ColourAnsiGreen})
+		w.AddMessage(SimpleMessage{Message: "You feel your health improving", Colour: "LogGood"})
 	}
 }
 
@@ -149,7 +148,7 @@ func (mev *monsterEvent) Action(w *World) {
 	case MonsterDeath:
 		e := w.Entities.Get(mev.NMons)
 		e.Name = "Dead " + e.Name
-		e.color = ui.ColourBlood
+		e.color = "BloodRed"
 		e.char = '%'
 		e.RenderOrder = RoCorpse
 	}

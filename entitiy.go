@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"raylibtinkering/position"
-	"raylibtinkering/ui"
 	"sort"
 	"strconv"
 	"strings"
@@ -69,7 +67,7 @@ func (f *Fighter) TakeDamage(amount int) InteractionResults {
 	if f.HP == 0 {
 		result := make(InteractionResult)
 		result["death"] = f.owner
-		result["message"] = SimpleMessage{Message: fmt.Sprintf("%s is dead.", f.owner.Name), Colour: ui.ColourAnsiRed}
+		result["message"] = SimpleMessage{Message: fmt.Sprintf("%s is dead.", f.owner.Name), Colour: "LogNormal"}
 		ret.Push(result)
 	}
 
@@ -101,7 +99,7 @@ func (f Fighter) Attack(target *Entity) InteractionResults {
 			msg = fmt.Sprintf("%s attacks %s for %d hit points.", f.owner.Name, target.Name, damage)
 		}
 
-		result["message"] = SimpleMessage{Message: msg, Colour: ui.ColourForeground}
+		result["message"] = SimpleMessage{Message: msg, Colour: "LogNormal"}
 		ret.Push(result)
 		ret.Merge(target.Fighter.TakeDamage(damage))
 	} else {
@@ -113,7 +111,7 @@ func (f Fighter) Attack(target *Entity) InteractionResults {
 			msg = fmt.Sprintf("%s attacks %s but does no damage.", f.owner.Name, target.Name)
 		}
 
-		result["message"] = SimpleMessage{Message: msg, Colour: ui.ColourForeground}
+		result["message"] = SimpleMessage{Message: msg, Colour: "LogNormal"}
 		ret.Push(result)
 	}
 
@@ -229,12 +227,12 @@ type Entity struct {
 	Type               entityType
 	position           position.Position
 	char               uint
-	color              rl.Color
+	color              string
 	blocks             bool
 	TurnActionFunction func(e *Entity, w *World, ev event)
 }
 
-func NewEntity(pos position.Position, char uint, name string, color rl.Color, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
+func NewEntity(pos position.Position, char uint, name string, color string, blocking bool, b Brain, f *Fighter, renderOrder renderOrder, entityType entityType) *Entity {
 	entity := &Entity{
 		Name:        name,
 		Type:        entityType,

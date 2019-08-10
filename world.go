@@ -41,7 +41,7 @@ func (w *World) InitWorld() {
 	}}
 
 	// Generate the terrain and set up the player entity
-	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", ui.ColourPlayer, true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
+	w.Entities.Set("player", NewEntity(w.Terrain.Generate(TutorialTerrainGenerator, w.Entities, genConfig), '@', "Player", "Player", true, &PlayerBrain{}, NewFighter(30, 2, 5), RoActor, EtPlayer))
 	w.Terrain.SetExplored(w.Entities.Get("player").position)
 
 	// Set blocked tiles from terrain
@@ -57,7 +57,7 @@ func (w *World) InitWorld() {
 		// g.CleanEvents() @todo learn what this does... see https://github.com/anaseto/boohu/blob/master/game.go#L654
 	}
 
-	for name, _ := range w.Entities.Entities {
+	for name := range w.Entities.Entities {
 		if name == "player" {
 			w.PushEvent(&simpleEvent{ERank: 0, EAction: PlayerTurn})
 			w.PushEvent(&simpleEvent{ERank: 500, EAction: HealPlayer}) // heal the player every 50 turns
@@ -123,7 +123,7 @@ func (w *World) PopIEvent() iEvent {
 }
 
 func (w World) Draw(dt float32) {
-	rl.ClearBackground(ui.ColourBg)
+	rl.ClearBackground(ui.GameColours["Bg"])
 
 	uiMap := w.e.screen.Get("Map")
 
@@ -135,15 +135,15 @@ func (w World) Draw(dt float32) {
 
 			if w.FovMap.IsVisible(pos) {
 				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui.ColourWallFOV, ui.ColourNC)
+					uiMap.SetChar(178, pos, ui.GameColours["WallFOV"], ui.ColourNC)
 				} else {
-					uiMap.SetChar('.', pos, ui.ColourFloorFOV, ui.ColourNC)
+					uiMap.SetChar('.', pos, ui.GameColours["FloorFOV"], ui.ColourNC)
 				}
 			} else if cell.Explored == true {
 				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui.ColourWall, ui.ColourNC)
+					uiMap.SetChar(178, pos, ui.GameColours["Wall"], ui.ColourNC)
 				} else {
-					uiMap.SetChar('.', pos, ui.ColourFloor, ui.ColourNC)
+					uiMap.SetChar('.', pos, ui.GameColours["Floor"], ui.ColourNC)
 				}
 			}
 		}
@@ -152,7 +152,7 @@ func (w World) Draw(dt float32) {
 	// Draw Entities
 	for _, entity := range w.Entities.SortedByRenderOrder() {
 		if w.FovMap.IsVisible(entity.position) {
-			uiMap.SetChar(entity.char, entity.position, entity.color, ui.ColourNC)
+			uiMap.SetChar(entity.char, entity.position, ui.GameColours[entity.color], ui.ColourNC)
 		}
 	}
 
@@ -161,9 +161,9 @@ func (w World) Draw(dt float32) {
 	// Tmp Draw Mouse cursor for debug
 	var CursorColour rl.Color
 	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		CursorColour = ui.ColourWallFOV
+		CursorColour = ui.GameColours["WallFOV"]
 	} else {
-		CursorColour = ui.ColourPlayer
+		CursorColour = ui.GameColours["Player"]
 	}
 	w.e.screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
 }
@@ -241,9 +241,9 @@ func (w *World) Update(dt float32) {
 	// Write to Ui.Statistics
 	uiStatistics := w.e.screen.Get("Statistics")
 
-	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.ColourFg, ui.ColourNC)
-	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.ColourFg, ui.ColourNC)
-	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.ColourFg, ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.GameColours["Fg"], ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.GameColours["Fg"], ui.ColourNC)
 }
 
 func (w World) Save(filename string) error {

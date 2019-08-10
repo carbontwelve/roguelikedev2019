@@ -27,7 +27,7 @@ func NewLobbyState(e *Engine) *LobbyState {
 }
 
 func (s LobbyState) Draw(dt float32) {
-	rl.ClearBackground(ui.ColourBg)
+	rl.ClearBackground(ui.GameColours["Bg"])
 }
 
 func (s LobbyState) DrawColourSquares() {
@@ -78,7 +78,7 @@ func (s LobbyState) DrawColourSquares() {
 	}
 
 	currentTheme := ui.LoadedThemeRepository.GetCurrentTheme().Name
-	viewport.SetString(currentTheme, position.Position{int(viewport.GetInnerWidth()/2) - utf8.RuneCountInString(currentTheme)/2, int(viewport.GetInnerHeight() / 2)}, ui.ColourForeground, ui.ColourNC)
+	viewport.SetString(currentTheme, position.Position{int(viewport.GetInnerWidth()/2) - utf8.RuneCountInString(currentTheme)/2, int(viewport.GetInnerHeight() / 2)}, ui.GameColours["Fg"], ui.ColourNC)
 }
 
 func (s *LobbyState) Update(dt float32) {

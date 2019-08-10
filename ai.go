@@ -2,7 +2,6 @@ package main
 
 import (
 	"raylibtinkering/position"
-	"raylibtinkering/ui"
 )
 
 type Brain interface {
@@ -28,7 +27,7 @@ func (b HindBrain) HandleInteractionResults(w *World, results InteractionResults
 		if val, ok := result["death"]; ok {
 			e := val.(*Entity)
 			e.Name = "remains of " + e.Name
-			e.color = ui.ColourBlood
+			e.color = "BloodRed"
 			e.char = '%'
 			e.RenderOrder = RoCorpse
 		}

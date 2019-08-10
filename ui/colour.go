@@ -8,83 +8,52 @@ import (
 // No colour/transparent
 var ColourNC = rl.Color{R: 0, G: 0, B: 0, A: 0}
 
-// 16 Colour ANSI Palette:
-// This is loaded by the LoadTheme function and used by LinkColours to
-// fill the colours used by the game. This has an effect of allowing
-// themes to be switched at run time if needed.
-var (
-	ColourForeground      rl.Color
-	ColourBackground      rl.Color
-	ColourAnsiWhite       rl.Color
-	ColourAnsiBlack       rl.Color
-	ColourAnsiBlue        rl.Color
-	ColourAnsiGreen       rl.Color
-	ColourAnsiCyan        rl.Color
-	ColourAnsiRed         rl.Color
-	ColourAnsiPurple      rl.Color
-	ColourAnsiYellow      rl.Color
-	ColourAnsiGrey        rl.Color
-	ColourAnsiLightBlue   rl.Color
-	ColourAnsiLightGreen  rl.Color
-	ColourAnsiLightCyan   rl.Color
-	ColourAnsiLightRed    rl.Color
-	ColourAnsiLightPurple rl.Color
-	ColourAnsiLightYellow rl.Color
-	ColourAnsiLightGrey   rl.Color
-)
-
 // Game colours, these are the names of colours the game works with and can be
 // assigned by LinkColours to different theme colours.
-var (
-	ColourBg       rl.Color
-	ColourFg       rl.Color
-	ColourUiLines  rl.Color
-	ColourPlayer   rl.Color
-	ColourWall     rl.Color
-	ColourWallFOV  rl.Color
-	ColourFloor    rl.Color
-	ColourFloorFOV rl.Color
-
-	ColourBlood rl.Color
-)
+var GameColours map[string]rl.Color
 
 func MapThemeToColours(theme Theme) {
 	fmt.Println(fmt.Sprintf("Mapping Theme [%s]", theme.Name))
+	GameColours = make(map[string]rl.Color)
 	colours := theme.AsRaylibColor()
 
+	// 16 Colour Terminal Palette seems to work nicely with roguelikes.
+
 	// Eight Normal Colours
-	ColourAnsiBlack = colours[0]
-	ColourAnsiRed = colours[1]
-	ColourAnsiGreen = colours[2]
-	ColourAnsiYellow = colours[3]
-	ColourAnsiBlue = colours[4]
-	ColourAnsiPurple = colours[5]
-	ColourAnsiCyan = colours[6]
-	ColourAnsiWhite = colours[7]
+	GameColours["AnsiBlack"] = colours[0]
+	GameColours["AnsiRed"] = colours[1]
+	GameColours["AnsiGreen"] = colours[2]
+	GameColours["AnsiYellow"] = colours[3]
+	GameColours["AnsiBlue"] = colours[4]
+	GameColours["AnsiPurple"] = colours[5]
+	GameColours["AnsiCyan"] = colours[6]
+	GameColours["AnsiWhite"] = colours[7]
 
 	// Eight Light Variants
-	ColourAnsiGrey = colours[8]
-	ColourAnsiLightRed = colours[9]
-	ColourAnsiLightGreen = colours[10]
-	ColourAnsiLightYellow = colours[11]
-	ColourAnsiLightBlue = colours[12]
-	ColourAnsiLightPurple = colours[13]
-	ColourAnsiLightCyan = colours[14]
-	ColourAnsiLightGrey = colours[15]
+	GameColours["AnsiGrey"] = colours[8]
+	GameColours["AnsiLightRed"] = colours[9]
+	GameColours["AnsiLightGreen"] = colours[10]
+	GameColours["AnsiLightYellow"] = colours[11]
+	GameColours["AnsiLightBlue"] = colours[12]
+	GameColours["AnsiLightPurple"] = colours[13]
+	GameColours["AnsiLightCyan"] = colours[14]
+	GameColours["AnsiLightGrey"] = colours[15]
 
 	// Special Colours
-	ColourBackground = colours[256]
-	ColourForeground = colours[257]
+	GameColours["Bg"] = colours[256]
+	GameColours["Fg"] = colours[257]
 }
 
 func LinkWorkingColourPalette() {
-	ColourBg = ColourBackground
-	ColourFg = ColourForeground
-	ColourUiLines = ColourAnsiLightGrey
-	ColourPlayer = ColourAnsiLightYellow
-	ColourWall = ColourAnsiGrey
-	ColourWallFOV = ColourAnsiLightGrey
-	ColourFloor = ColourAnsiGrey
-	ColourFloorFOV = ColourAnsiGrey
-	ColourBlood = ColourAnsiLightRed
+	GameColours["LogNormal"] = GameColours["Fg"]
+	GameColours["LogGood"] = GameColours["AnsiGreen"]
+	GameColours["LogBad"] = GameColours["AnsiRed"]
+	GameColours["LogInfo"] = GameColours["AnsiPurple"]
+	GameColours["UiLines"] = GameColours["AnsiLightGrey"]
+	GameColours["Player"] = GameColours["AnsiLightYellow"]
+	GameColours["Wall"] = GameColours["AnsiGrey"]
+	GameColours["WallFOV"] = GameColours["AnsiLightGrey"]
+	GameColours["Floor"] = GameColours["AnsiGrey"]
+	GameColours["FloorFOV"] = GameColours["AnsiGrey"]
+	GameColours["BloodRed"] = GameColours["AnsiLightRed"]
 }

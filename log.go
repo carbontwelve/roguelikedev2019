@@ -1,7 +1,6 @@
 package main
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/mitchellh/go-wordwrap"
 	"raylibtinkering/position"
 	"raylibtinkering/ui"
@@ -10,13 +9,13 @@ import (
 
 type SimpleMessage struct {
 	Message string
-	Colour  rl.Color
+	Colour  string
 }
 
 type Message struct {
 	Turn    uint
 	Message string
-	Colour  rl.Color
+	Colour  string
 }
 
 type MessageLog struct {
@@ -41,7 +40,7 @@ func (mL *MessageLog) AddMessage(m Message) {
 	// Draw message buffer to component
 	for y, msg := range mL.Messages {
 		mL.ClearRow(uint(1 + y))
-		mL.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, msg.Colour, ui.ColourNC)
+		mL.SetString(msg.Message, position.Position{X: 1, Y: 1 + y}, ui.GameColours[msg.Colour], ui.ColourNC)
 	}
 }
 

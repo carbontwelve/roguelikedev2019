@@ -23,16 +23,16 @@ func NewTestingState(e *Engine) *TestingState {
 }
 
 func (s TestingState) Draw(dt float32) {
-	rl.ClearBackground(ui.ColourBg)
+	rl.ClearBackground(ui.GameColours["Bg"])
 
 	// test sprite sheet whole
 	for y := uint(0); y < s.e.screen.Rows; y++ {
 		for x := uint(0); x < s.e.screen.Cols; x++ {
-			//s.e.sprites.At(x, y).Draw(rl.NewVector2(float32(10+(10*x)), float32(50+(10*y))), ColourPlayer)
+			//s.e.sprites.At(x, y).Draw(rl.NewVector2(float32(10+(10*x)), float32(50+(10*y))), GameColours["Player"])
 		}
 	}
 
-	//s.e.font.Draw(s.lastKeyCode, rl.NewVector2(10, 200), ColourPlayer)
+	//s.e.font.Draw(s.lastKeyCode, rl.NewVector2(10, 200), GameColours["Player"])
 }
 
 func (s *TestingState) Update(dt float32) {
