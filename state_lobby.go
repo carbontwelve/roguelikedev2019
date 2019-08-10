@@ -4,6 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
 	"raylibtinkering/ui"
+	"unicode/utf8"
 )
 
 type LobbyState struct {
@@ -75,6 +76,9 @@ func (s LobbyState) DrawColourSquares() {
 			xOff = 12
 		}
 	}
+
+	currentTheme := ui.LoadedThemeRepository.GetCurrentTheme().Name
+	viewport.SetString(currentTheme, position.Position{int(viewport.GetInnerWidth()/2) - utf8.RuneCountInString(currentTheme)/2, int(viewport.GetInnerHeight() / 2)}, ui.ColourForeground, ui.ColourNC)
 }
 
 func (s *LobbyState) Update(dt float32) {
