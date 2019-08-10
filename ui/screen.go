@@ -24,17 +24,26 @@ type componentZOrder struct {
 // to respond to user input.
 //
 type Screen struct {
-	width, height uint // In pixels e.g 800x600
-	Rows, Cols    uint
-	components    map[string]*componentZOrder
-	positionCache map[position.Position]string // cache of component position so we can tell if a mouse pointer is hovering
-	drawOrder     []*componentZOrder
-	dirty         bool
-	tileset       *Tileset
+	width, height     uint // In pixels e.g 800x600
+	Rows, Cols        uint
+	components        map[string]*componentZOrder
+	positionCache     map[position.Position]string // cache of component position so we can tell if a mouse pointer is hovering
+	handleEventsCache []string                     // List of components that have event handlers set
+	drawOrder         []*componentZOrder
+	dirty             bool
+	tileset           *Tileset
 }
 
 func (s *Screen) HandleEvents() {
+	if len(s.handleEventsCache) == 0 {
+		return
+	}
+
 	// @todo loop over components and handle any user input per component e.g for buttons
+	for _, name := range s.handleEventsCache {
+		s.components[name].c.HandleUserInput()
+	}
+
 }
 
 func (s *Screen) Draw() {

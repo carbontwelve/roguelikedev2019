@@ -4,6 +4,7 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"os"
+	"raylibtinkering/state"
 	"raylibtinkering/ui"
 )
 
@@ -27,13 +28,13 @@ func main() {
 	ui.LinkWorkingColourPalette()
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
-	game := newEngine()
+	game := state.NewEngine(NewLobbyState())
 
 	// Main Loop
 	//----------------------------------------------------------------------------------
 	for !rl.WindowShouldClose() {
 		frameTime := rl.GetFrameTime()
-		state := game.PeekState()
+		currentState := game.PeekState()
 
 		// Update
 		//----------------------------------------------------------------------------------
@@ -52,19 +53,20 @@ func main() {
 			ui.LinkWorkingColourPalette()
 		}
 
-		state.Update(frameTime)
+		game.Screen.HandleEvents()
+		currentState.Update(frameTime)
 
 		// Draw
 		//----------------------------------------------------------------------------------
 
 		rl.BeginDrawing()
-		state.Draw(frameTime)
-		game.screen.Draw()
+		currentState.Draw(frameTime)
+		game.Screen.Draw()
 
 		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])
 		rl.EndDrawing()
 
-		if state.ShouldQuit() {
+		if currentState.ShouldQuit() {
 			break
 		}
 	}

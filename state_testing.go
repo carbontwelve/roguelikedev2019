@@ -3,17 +3,18 @@ package main
 import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/state"
 	"raylibtinkering/ui"
 )
 
 type TestingState struct {
 	lastKeyCode, x, y int
-	State
+	state.State
 }
 
-func NewTestingState(e *Engine) *TestingState {
+func NewTestingState() *TestingState {
 	s := &TestingState{
-		State:       State{e: e},
+		State:       state.State{},
 		x:           0,
 		y:           0,
 		lastKeyCode: 0,

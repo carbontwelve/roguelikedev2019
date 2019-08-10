@@ -21,6 +21,7 @@ type ComponentI interface {
 	Clear()
 	ClearRow(y uint)
 	ClearCol(x uint, r rune)
+	HandleUserInput()
 	SetRow(str string, p position.Position, fg, bg rl.Color)
 	SetString(str string, p position.Position, fg, bg rl.Color)
 	SetCamera(cam *Camera)
@@ -39,6 +40,8 @@ var ZeroWallBorder = BorderStyle{
 	0, 0, 0, 0, 0, 0,
 }
 
+type ComponentInputEventHandler func(component *Component)
+
 type Component struct {
 	Name             string
 	Width, Height    uint
@@ -49,6 +52,11 @@ type Component struct {
 	camera           *Camera
 	visible          bool
 	autoClear        bool
+	inputHandler     ComponentInputEventHandler
+}
+
+func (c *Component) HandleUserInput() {
+	c.inputHandler(c)
 }
 
 func (c Component) GetName() string {

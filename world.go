@@ -5,12 +5,13 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
-	ui "raylibtinkering/ui"
+	"raylibtinkering/state"
+	"raylibtinkering/ui"
 	"time"
 )
 
 type World struct {
-	State
+	state.State
 	NextTurnMove position.Position
 	MessageLog   *MessageLog
 	Terrain      *Terrain
@@ -68,28 +69,35 @@ func (w *World) InitWorld() {
 	}
 }
 
-func NewWorld(e *Engine) *World {
-	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
-
-	// @todo refactor DungeonWidth/Height to something more practical
+// @todo move this to a on state change function as we may not want to reset on World construction...
+// @todo refactor DungeonWidth/Height to something more practical
+func (w *World) Pushed(owner *state.Engine) error {
+	owner.Screen.Reset()
 
 	msgLog := NewMessageLog("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6)
 
-	e.screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
-	e.screen.Set(msgLog, 20)
-	e.screen.Set(ui.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
-	e.screen.Set(ui.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
+	owner.Screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
+	owner.Screen.Set(msgLog, 20)
+	owner.Screen.Set(ui.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
+	owner.Screen.Set(ui.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
+	owner.Screen.Set(ui.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 9999)
+	owner.Screen.Get("MessageLog").SetBorderStyle(ui.SingleWallBorder)
+	owner.Screen.Get("Statistics").SetBorderStyle(ui.SingleWallBorder)
 
-	e.screen.Set(ui.NewComponent("Mouse", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 9999)
+	camera := ui.NewCamera(owner.Screen.Get("Map"), owner.Screen.Get("Viewport"))
 
-	e.screen.Get("MessageLog").SetBorderStyle(ui.SingleWallBorder)
-	e.screen.Get("Statistics").SetBorderStyle(ui.SingleWallBorder)
+	w.Owner = owner
+	w.Camera = camera
+	w.MessageLog = msgLog
 
-	camera := ui.NewCamera(e.screen.Get("Map"), e.screen.Get("Viewport"))
+	w.InitWorld()
+	return nil
+}
 
+func NewWorld() *World {
 	world := &World{
 		NextTurnMove: position.Position{0, 0},
-		State:        State{e: e, Quit: false},
+		State:        state.State{Quit: false},
 		Terrain:      NewTerrain(position.DungeonWidth, position.DungeonHeight),
 		FovMap:       NewFovMap(position.DungeonWidth, position.DungeonHeight),
 		Entities:     &Entities{Entities: make(map[string]*Entity)},
@@ -99,10 +107,10 @@ func NewWorld(e *Engine) *World {
 		FOVRecompute: true,
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
-		MessageLog:   msgLog,
-		Camera:       camera,
+		//MessageLog:   msgLog,
+		//Camera:       camera,
 	}
-	world.InitWorld()
+	// world.InitWorld()
 	return world
 }
 
@@ -125,7 +133,7 @@ func (w *World) PopIEvent() iEvent {
 func (w World) Draw(dt float32) {
 	rl.ClearBackground(ui.GameColours["Bg"])
 
-	uiMap := w.e.screen.Get("Map")
+	uiMap := w.Owner.Screen.Get("Map")
 
 	// Draw Terrain
 	for x := 0; x < w.Terrain.w; x++ {
@@ -165,7 +173,7 @@ func (w World) Draw(dt float32) {
 	} else {
 		CursorColour = ui.GameColours["Player"]
 	}
-	w.e.screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
+	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
 }
 
 func (w *World) AddMessage(msg SimpleMessage) {
@@ -200,7 +208,7 @@ func (w *World) Update(dt float32) {
 	} else if rl.IsKeyDown(rl.KeyRight) {
 		newPos = playerEntity.position.E()
 	} else if rl.IsKeyPressed(rl.KeySpace) {
-		w.e.ChangeState(NewWorld(w.e))
+		w.Owner.ChangeState(NewWorld())
 	}
 
 	// Only allow the player to make their turn evey 0.12 seconds... I think it's seconds.
@@ -239,7 +247,7 @@ func (w *World) Update(dt float32) {
 	}
 
 	// Write to Ui.Statistics
-	uiStatistics := w.e.screen.Get("Statistics")
+	uiStatistics := w.Owner.Screen.Get("Statistics")
 
 	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.GameColours["Fg"], ui.ColourNC)

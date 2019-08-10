@@ -1,6 +1,8 @@
-package main
+package state
 
 type GameState interface {
+	Pushed(owner *Engine) error
+	Popped(owner *Engine) error
 	Draw(dt float32)
 	Update(dt float32)
 	GetName() string
@@ -10,8 +12,17 @@ type GameState interface {
 }
 
 type State struct {
-	e    *Engine
-	Quit bool
+	Owner *Engine
+	Quit  bool
+}
+
+func (s *State) Pushed(owner *Engine) error {
+	s.Owner = owner
+	return nil
+}
+
+func (s *State) Popped(owner *Engine) error {
+	return nil
 }
 
 //
