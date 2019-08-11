@@ -153,13 +153,13 @@ func (w *World) Tick(dt float32) {
 
 	newPos := position.Position{0, 0}
 
-	if rl.IsKeyDown(rl.KeyUp) {
+	if rl.IsKeyDown(rl.KeyW) {
 		newPos = playerEntity.position.N()
-	} else if rl.IsKeyDown(rl.KeyDown) {
+	} else if rl.IsKeyDown(rl.KeyS) {
 		newPos = playerEntity.position.S()
-	} else if rl.IsKeyDown(rl.KeyLeft) {
+	} else if rl.IsKeyDown(rl.KeyA) {
 		newPos = playerEntity.position.W()
-	} else if rl.IsKeyDown(rl.KeyRight) {
+	} else if rl.IsKeyDown(rl.KeyD) {
 		newPos = playerEntity.position.E()
 	} else if rl.IsKeyPressed(rl.KeySpace) {
 		w.Owner.ChangeState(NewWorld())
