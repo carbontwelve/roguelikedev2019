@@ -47,12 +47,28 @@ func (pos Position) N() Position {
 	return Position{pos.X, pos.Y - 1}
 }
 
+func (pos Position) NE() Position {
+	return Position{pos.X + 1, pos.Y - 1}
+}
+
+func (pos Position) NW() Position {
+	return Position{pos.X - 1, pos.Y - 1}
+}
+
 func (pos Position) E() Position {
 	return Position{pos.X + 1, pos.Y}
 }
 
 func (pos Position) S() Position {
 	return Position{pos.X, pos.Y + 1}
+}
+
+func (pos Position) SE() Position {
+	return Position{pos.X + 1, pos.Y + 1}
+}
+
+func (pos Position) SW() Position {
+	return Position{pos.X - 1, pos.Y + 1}
 }
 
 func (pos Position) W() Position {
