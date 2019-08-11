@@ -27,6 +27,8 @@ func main() {
 	ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
 	ui.LinkWorkingColourPalette()
 
+	ui.MousePos = &ui.Mouse{}
+
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := state.NewEngine(NewLobbyState())
 
@@ -36,13 +38,14 @@ func main() {
 		frameTime := rl.GetFrameTime()
 		currentState := game.PeekState()
 
-		// Tick
+		// Keyboard Input:
 		//----------------------------------------------------------------------------------
 
 		//if rl.IsKeyPressed(rl.KeyF) {
 		//	rl.ToggleFullscreen()
 		//}
 
+		// Prev/Next Theme
 		if rl.IsKeyPressed(rl.KeyO) {
 			ui.LoadedThemeRepository.Prev()
 			ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
@@ -53,16 +56,22 @@ func main() {
 			ui.LinkWorkingColourPalette()
 		}
 
+		// Mouse Input:
+		// ----------------------------------------------------------------------------------
+		// Mouse input is used by State as well as Screen Components. To keep things all in
+		// one place we collect the mouse information here and pass it to both.
+		ui.MousePos.Update(rl.GetMousePosition())
+
+		// Tick
+		//----------------------------------------------------------------------------------
 		game.Screen.HandleEvents()
 		currentState.Tick(frameTime)
 
 		// Draw
 		//----------------------------------------------------------------------------------
-
 		rl.BeginDrawing()
 		rl.ClearBackground(ui.GameColours["Bg"])
 		game.Screen.Draw()
-
 		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])
 		rl.EndDrawing()
 

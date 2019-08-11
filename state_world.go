@@ -27,10 +27,10 @@ type World struct {
 	FOVRecompute bool
 	FOVAlgo      FOVAlgo
 	inputDelay   float32
-	MouseX       int
-	MouseY       int
-	MouseHover   bool
-	Camera       *ui.Camera
+	//MouseX       int
+	//MouseY       int
+	//MouseHover   bool
+	Camera *ui.Camera
 }
 
 func (w *World) InitWorld() {
@@ -107,10 +107,7 @@ func NewWorld() *World {
 		FOVRecompute: true,
 		FOVAlgo:      FOVCircular,
 		inputDelay:   0.11,
-		//MessageLog:   msgLog,
-		//Camera:       camera,
 	}
-	// world.InitWorld()
 	return world
 }
 
@@ -140,15 +137,6 @@ func (w *World) Tick(dt float32) {
 	if w.Events.Len() == 0 {
 		w.Quit = true
 		return
-	}
-
-	mousePos := rl.GetMousePosition()
-	if mousePos.X > 0 && mousePos.Y > 0 && mousePos.X < float32(rl.GetScreenWidth()) && mousePos.Y < float32(rl.GetScreenHeight()) {
-		w.MouseHover = true
-		w.MouseX = int(mousePos.X / 10) // divided by cell size... this needs refactoring
-		w.MouseY = int(mousePos.Y / 10)
-	} else {
-		w.MouseHover = false
 	}
 
 	newPos := position.Position{0, 0}
@@ -213,7 +201,7 @@ func (w *World) Tick(dt float32) {
 
 	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", playerEntity.Fighter.HP, playerEntity.Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.GameColours["Fg"], ui.ColourNC)
-	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.GameColours["Fg"], ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", ui.MousePos.X, ui.MousePos.Y), position.Position{1, 3}, ui.GameColours["Fg"], ui.ColourNC)
 
 	uiMap := w.Owner.Screen.Get("Map")
 
@@ -256,7 +244,7 @@ func (w *World) Tick(dt float32) {
 	} else {
 		CursorColour = ui.GameColours["Player"]
 	}
-	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
+	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(ui.MousePos.X), Y: int(ui.MousePos.Y)}, CursorColour, ui.ColourNC)
 }
 
 func (w World) Save(filename string) error {
