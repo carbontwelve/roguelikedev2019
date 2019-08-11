@@ -33,11 +33,7 @@ func (s *LobbyState) Popped(owner *state.Engine) error {
 	return nil
 }
 
-func (s LobbyState) Draw(dt float32) {
-	rl.ClearBackground(ui.GameColours["Bg"])
-}
-
-func (s *LobbyState) Update(dt float32) {
+func (s *LobbyState) Tick(dt float32) {
 	if rl.IsKeyPressed(rl.KeySpace) {
 		s.Owner.ChangeState(NewWorld())
 	}

@@ -130,57 +130,11 @@ func (w *World) PopIEvent() iEvent {
 	return iev
 }
 
-func (w World) Draw(dt float32) {
-	rl.ClearBackground(ui.GameColours["Bg"])
-
-	uiMap := w.Owner.Screen.Get("Map")
-
-	// Draw Terrain
-	for x := 0; x < w.Terrain.w; x++ {
-		for y := 0; y < w.Terrain.h; y++ {
-			pos := position.Position{x, y}
-			cell := w.Terrain.Cell(pos)
-
-			if w.FovMap.IsVisible(pos) {
-				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui.GameColours["WallFOV"], ui.ColourNC)
-				} else {
-					uiMap.SetChar('.', pos, ui.GameColours["FloorFOV"], ui.ColourNC)
-				}
-			} else if cell.Explored == true {
-				if cell.T == WallCell {
-					uiMap.SetChar(178, pos, ui.GameColours["Wall"], ui.ColourNC)
-				} else {
-					uiMap.SetChar('.', pos, ui.GameColours["Floor"], ui.ColourNC)
-				}
-			}
-		}
-	}
-
-	// Draw Entities
-	for _, entity := range w.Entities.SortedByRenderOrder() {
-		if w.FovMap.IsVisible(entity.position) {
-			uiMap.SetChar(entity.char, entity.position, ui.GameColours[entity.color], ui.ColourNC)
-		}
-	}
-
-	w.Camera.FollowTarget(w.Entities.Get("player").position)
-
-	// Tmp Draw Mouse cursor for debug
-	var CursorColour rl.Color
-	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		CursorColour = ui.GameColours["WallFOV"]
-	} else {
-		CursorColour = ui.GameColours["Player"]
-	}
-	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
-}
-
 func (w *World) AddMessage(msg SimpleMessage) {
 	w.MessageLog.AddMessage(Message{Turn: uint(w.Turn / 10), Message: msg.Message, Colour: msg.Colour})
 }
 
-func (w *World) Update(dt float32) {
+func (w *World) Tick(dt float32) {
 	playerEntity := w.Entities.Get("player")
 
 	if w.Events.Len() == 0 {
@@ -252,6 +206,48 @@ func (w *World) Update(dt float32) {
 	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.GameColours["Fg"], ui.ColourNC)
+
+	uiMap := w.Owner.Screen.Get("Map")
+
+	// Draw Terrain
+	for x := 0; x < w.Terrain.w; x++ {
+		for y := 0; y < w.Terrain.h; y++ {
+			pos := position.Position{x, y}
+			cell := w.Terrain.Cell(pos)
+
+			if w.FovMap.IsVisible(pos) {
+				if cell.T == WallCell {
+					uiMap.SetChar(178, pos, ui.GameColours["WallFOV"], ui.ColourNC)
+				} else {
+					uiMap.SetChar('.', pos, ui.GameColours["FloorFOV"], ui.ColourNC)
+				}
+			} else if cell.Explored == true {
+				if cell.T == WallCell {
+					uiMap.SetChar(178, pos, ui.GameColours["Wall"], ui.ColourNC)
+				} else {
+					uiMap.SetChar('.', pos, ui.GameColours["Floor"], ui.ColourNC)
+				}
+			}
+		}
+	}
+
+	// Draw Entities
+	for _, entity := range w.Entities.SortedByRenderOrder() {
+		if w.FovMap.IsVisible(entity.position) {
+			uiMap.SetChar(entity.char, entity.position, ui.GameColours[entity.color], ui.ColourNC)
+		}
+	}
+
+	w.Camera.FollowTarget(w.Entities.Get("player").position)
+
+	// Tmp Draw Mouse cursor for debug
+	var CursorColour rl.Color
+	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		CursorColour = ui.GameColours["WallFOV"]
+	} else {
+		CursorColour = ui.GameColours["Player"]
+	}
+	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(w.MouseX), Y: int(w.MouseY)}, CursorColour, ui.ColourNC)
 }
 
 func (w World) Save(filename string) error {

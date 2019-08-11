@@ -37,10 +37,6 @@ func (d *DebugState) Popped(owner *state.Engine) error {
 	return nil
 }
 
-func (d DebugState) Draw(dt float32) {
-	rl.ClearBackground(ui.GameColours["Bg"])
-}
-
 func (d DebugState) DrawColourSquares() {
 
 	colours := ui.LoadedThemeRepository.GetCurrentTheme().AsRaylibColor()
@@ -92,7 +88,7 @@ func (d DebugState) DrawColourSquares() {
 	viewport.SetString(currentTheme, position.Position{int(viewport.GetInnerWidth()/2) - utf8.RuneCountInString(currentTheme)/2, int(viewport.GetInnerHeight() / 2)}, ui.GameColours["Fg"], ui.ColourNC)
 }
 
-func (d *DebugState) Update(dt float32) {
+func (d *DebugState) Tick(dt float32) {
 	if rl.IsKeyPressed(rl.KeySpace) {
 		d.Owner.ChangeState(NewWorld())
 	}

@@ -36,7 +36,7 @@ func main() {
 		frameTime := rl.GetFrameTime()
 		currentState := game.PeekState()
 
-		// Update
+		// Tick
 		//----------------------------------------------------------------------------------
 
 		//if rl.IsKeyPressed(rl.KeyF) {
@@ -54,13 +54,13 @@ func main() {
 		}
 
 		game.Screen.HandleEvents()
-		currentState.Update(frameTime)
+		currentState.Tick(frameTime)
 
 		// Draw
 		//----------------------------------------------------------------------------------
 
 		rl.BeginDrawing()
-		currentState.Draw(frameTime)
+		rl.ClearBackground(ui.GameColours["Bg"])
 		game.Screen.Draw()
 
 		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])

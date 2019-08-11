@@ -1,10 +1,9 @@
 package state
 
 type GameState interface {
-	Pushed(owner *Engine) error
-	Popped(owner *Engine) error
-	Draw(dt float32)
-	Update(dt float32)
+	Pushed(owner *Engine) error // Executed when the state is pushed onto the StateMachine stack
+	Popped(owner *Engine) error // Executed when the state is popped off of the StateMachine stack
+	Tick(dt float32)
 	GetName() string
 	Save(filename string) error
 	Load(filename string) error
