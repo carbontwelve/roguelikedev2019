@@ -22,6 +22,8 @@ type ComponentI interface {
 	ClearRow(y uint)
 	ClearCol(x uint, r rune)
 	HandleUserInput()
+	SetInputHandler(iH ComponentInputEventHandler)
+	HasInputHandler() bool
 	SetRow(str string, p position.Position, fg, bg rl.Color)
 	SetString(str string, p position.Position, fg, bg rl.Color)
 	SetCamera(cam *Camera)
@@ -53,6 +55,14 @@ type Component struct {
 	visible          bool
 	autoClear        bool
 	inputHandler     ComponentInputEventHandler
+}
+
+func (c *Component) SetInputHandler(iH ComponentInputEventHandler) {
+	c.inputHandler = iH
+}
+
+func (c Component) HasInputHandler() bool {
+	return c.inputHandler != nil
 }
 
 func (c *Component) HandleUserInput() {

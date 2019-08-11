@@ -80,11 +80,16 @@ func (s Screen) Get(k string) ComponentI {
 func (s *Screen) Set(c ComponentI, zIndex int) {
 	s.components[c.GetName()] = &componentZOrder{c: c, order: zIndex}
 	s.dirty = true
+
+	if c.HasInputHandler() {
+		s.handleEventsCache = append(s.handleEventsCache, c.GetName())
+	}
 }
 
 func (s *Screen) Reset() {
 	s.components = make(map[string]*componentZOrder)
 	s.drawOrder = make([]*componentZOrder, 0)
+	s.handleEventsCache = make([]string, 0)
 	s.positionCache = make(map[position.Position]string)
 	s.dirty = true
 }
