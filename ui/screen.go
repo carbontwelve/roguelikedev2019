@@ -41,9 +41,11 @@ func (s *Screen) HandleEvents() {
 
 	// @todo loop over components and handle any user input per component e.g for buttons
 	for _, name := range s.handleEventsCache {
+		if s.components[name] == nil {
+			continue // screen has been cleared and we are still handling events...
+		}
 		s.components[name].c.HandleUserInput()
 	}
-
 }
 
 func (s *Screen) Draw() {
@@ -77,13 +79,14 @@ func (s Screen) Get(k string) ComponentI {
 	return s.components[k].c
 }
 
-func (s *Screen) Set(c ComponentI, zIndex int) {
+func (s *Screen) Set(c ComponentI, zIndex int) ComponentI {
 	s.components[c.GetName()] = &componentZOrder{c: c, order: zIndex}
 	s.dirty = true
 
 	if c.HasInputHandler() {
 		s.handleEventsCache = append(s.handleEventsCache, c.GetName())
 	}
+	return c
 }
 
 func (s *Screen) Reset() {

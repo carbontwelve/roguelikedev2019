@@ -16,6 +16,7 @@ type ComponentI interface {
 	GetInnerHeight() uint
 	GetInnerWidth() uint
 	SetBorderStyle(bs BorderStyle)
+	SetBorderColour(bc BorderColour)
 	DrawBorder()
 	SetChar(r uint, p position.Position, fg, bg rl.Color)
 	Clear()
@@ -34,6 +35,11 @@ type BorderStyle struct {
 	V, H, NE, SE, SW, NW uint
 }
 
+// Colours in order: Top, Right, Bottom, Left
+type BorderColour [4]string
+
+var DefaultBorderColour = BorderColour{"UiLines", "UiLines", "UiLines", "UiLines"}
+
 var SingleWallBorder = BorderStyle{
 	TCOD_CHAR_VLINE, TCOD_CHAR_HLINE, TCOD_CHAR_NE, TCOD_CHAR_SE, TCOD_CHAR_SW, TCOD_CHAR_NW,
 }
@@ -48,6 +54,7 @@ type Component struct {
 	Name             string
 	Width, Height    uint
 	OffsetX, OffsetY int
+	borderColor      BorderColour
 	border           BorderStyle
 	bordered         bool
 	cells            map[position.Position]*Cell
@@ -113,24 +120,34 @@ func (c *Component) SetBorderStyle(bs BorderStyle) {
 	}
 }
 
+func (c *Component) SetBorderColour(bc BorderColour) {
+	c.borderColor = bc
+	if c.bordered {
+		c.DrawBorder()
+	}
+}
+
 func (c *Component) DrawBorder() {
 	if !c.bordered {
 		return
 	}
+
+	// Top/Bottom
 	for x := uint(0); x < c.Width-1; x++ {
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, GameColours["UiLines"], GameColours["bg"])
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, GameColours[c.borderColor[0]], GameColours["bg"])
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["bg"])
 	}
 
+	// Left/Right
 	for y := uint(0); y < c.Height-1; y++ {
-		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, GameColours["UiLines"], GameColours["bg"])
-		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, GameColours["UiLines"], GameColours["bg"])
+		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, GameColours[c.borderColor[3]], GameColours["bg"])
+		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, GameColours[c.borderColor[1]], GameColours["bg"])
 	}
 
-	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, GameColours["UiLines"], GameColours["bg"])
-	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
-	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, GameColours["UiLines"], GameColours["bg"])
-	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, GameColours["UiLines"], GameColours["bg"])
+	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, GameColours[c.borderColor[0]], GameColours["bg"])
+	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, GameColours[c.borderColor[1]], GameColours["bg"])
+	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["bg"])
+	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, GameColours[c.borderColor[3]], GameColours["bg"])
 }
 
 func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {
@@ -227,14 +244,15 @@ func (c Component) GetCells() map[position.Position]*Cell {
 //
 func NewComponent(name string, w, h uint, offX, offY int, visible bool) *Component {
 	component := &Component{
-		Name:      name,
-		Width:     w,
-		Height:    h,
-		OffsetX:   offX,
-		OffsetY:   offY,
-		cells:     make(map[position.Position]*Cell),
-		visible:   visible,
-		autoClear: true,
+		Name:        name,
+		Width:       w,
+		Height:      h,
+		OffsetX:     offX,
+		OffsetY:     offY,
+		cells:       make(map[position.Position]*Cell),
+		visible:     visible,
+		autoClear:   true,
+		borderColor: DefaultBorderColour,
 	}
 
 	for cY := uint(0); cY < h; cY++ {
