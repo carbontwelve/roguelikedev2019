@@ -13,18 +13,28 @@ type DebugState struct {
 }
 
 func NewDebugState() *DebugState {
-	e.screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
-	e.screen.Set(ui.NewComponent("Viewport", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 10)
-
-	e.screen.Get("Viewport").SetAutoClear(false)
 
 	s := &DebugState{
-		State: state.State{e: e, Quit: false},
+		State: state.State{Quit: false},
 	}
 
 	s.DrawColourSquares()
 
 	return s
+}
+
+func (d *DebugState) Pushed(owner *state.Engine) error {
+	d.Owner.Screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
+
+	d.Owner.Screen.Set(ui.NewComponent("Viewport", position.DungeonWidth, position.DungeonHeight, 0, 0, true), 10)
+	d.Owner.Screen.Get("Viewport").SetAutoClear(false)
+
+	d.Owner = owner
+	return nil
+}
+
+func (d *DebugState) Popped(owner *state.Engine) error {
+	return nil
 }
 
 func (d DebugState) Draw(dt float32) {
@@ -54,7 +64,7 @@ func (d DebugState) DrawColourSquares() {
 		ui.TCOD_CHAR_DSW, ui.TCOD_CHAR_DHLINE, ui.TCOD_CHAR_DHLINE, ui.TCOD_CHAR_DHLINE, ui.TCOD_CHAR_DSE,
 	}
 
-	viewport := d.e.screen.Get("Viewport")
+	viewport := d.Owner.Screen.Get("Viewport")
 
 	xOff := 12
 	yOff := 12
@@ -84,11 +94,11 @@ func (d DebugState) DrawColourSquares() {
 
 func (d *DebugState) Update(dt float32) {
 	if rl.IsKeyPressed(rl.KeySpace) {
-		d.e.ChangeState(NewWorld(d.e))
+		d.Owner.ChangeState(NewWorld())
 	}
 
 	if rl.IsKeyPressed(rl.KeyO) || rl.IsKeyPressed(rl.KeyP) {
-		d.e.screen.Get("Viewport").Clear()
+		d.Owner.Screen.Get("Viewport").Clear()
 		d.DrawColourSquares()
 	}
 }
