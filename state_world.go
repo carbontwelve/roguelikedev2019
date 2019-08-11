@@ -211,7 +211,7 @@ func (w *World) Tick(dt float32) {
 	// Write to Ui.Statistics
 	uiStatistics := w.Owner.Screen.Get("Statistics")
 
-	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", w.Entities.Get("player").Fighter.HP, w.Entities.Get("player").Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
+	uiStatistics.SetRow(fmt.Sprintf("HP: %d/%d", playerEntity.Fighter.HP, playerEntity.Fighter.MaxHP), position.Position{1, 1}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Turn: %d", w.Turn/10), position.Position{1, 2}, ui.GameColours["Fg"], ui.ColourNC)
 	uiStatistics.SetRow(fmt.Sprintf("Mouse (x,y): (%d,%d)", w.MouseX, w.MouseY), position.Position{1, 3}, ui.GameColours["Fg"], ui.ColourNC)
 
@@ -246,7 +246,8 @@ func (w *World) Tick(dt float32) {
 		}
 	}
 
-	w.Camera.FollowTarget(w.Entities.Get("player").position)
+	// Update camera target position
+	w.Camera.FollowTarget(playerEntity.position)
 
 	// Tmp Draw Mouse cursor for debug
 	var CursorColour rl.Color
