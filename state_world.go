@@ -76,7 +76,7 @@ func (w *World) Pushed(owner *state.Engine) error {
 
 	msgLog := NewMessageLog("MessageLog", position.DungeonWidth, 6, 0, position.DungeonHeight-6)
 
-	owner.Screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-24, position.DungeonHeight-5, 0, 0, true), 10)
+	owner.Screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-26, position.DungeonHeight-7, 0, 0, true), 10)
 	owner.Screen.Set(msgLog, 20)
 	owner.Screen.Set(ui.NewComponent("Statistics", 25, position.DungeonHeight-5, position.DungeonWidth-25, 0, true), 25)
 	owner.Screen.Set(ui.NewComponent("Map", position.DungeonWidth, position.DungeonHeight, 0, 0, false), 9999)
@@ -239,12 +239,17 @@ func (w *World) Tick(dt float32) {
 
 	// Tmp Draw Mouse cursor for debug
 	var CursorColour rl.Color
-	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		CursorColour = ui.GameColours["WallFOV"]
-	} else {
-		CursorColour = ui.GameColours["Player"]
+
+	if ui.MousePos.Inside(0, 0, int(w.Owner.Screen.Get("Viewport").GetWidth()), int(w.Owner.Screen.Get("Viewport").GetHeight())) {
+		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+			CursorColour = ui.GameColours["WallFOV"]
+		} else {
+			CursorColour = ui.GameColours["Player"]
+		}
+
+		w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(ui.MousePos.X), Y: int(ui.MousePos.Y)}, CursorColour, ui.ColourNC)
+
 	}
-	w.Owner.Screen.Get("Mouse").SetChar(178, position.Position{X: int(ui.MousePos.X), Y: int(ui.MousePos.Y)}, CursorColour, ui.ColourNC)
 }
 
 func (w World) Save(filename string) error {
