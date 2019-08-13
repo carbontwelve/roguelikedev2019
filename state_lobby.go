@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
 	"raylibtinkering/state"
@@ -28,29 +27,28 @@ func (s *LobbyState) Pushed(owner *state.Engine) error {
 
 	offsetX := 3
 	// @todo / 10 should be / tileHeight for the tile grid this is working on...
-	offsetY := (rl.GetScreenHeight() / 10) - 10
+	offsetY := (rl.GetScreenHeight() / 10) - 8
 
 	newGameBtn := owner.Screen.Set(NewButton("NewGameBtn", "Play", 16, 2, 2, offsetX, offsetY, BtnTextCenter, ui.DefaultBorderColour, func() {
-		fmt.Println("New game btn clicked")
 		s.Owner.ChangeState(NewWorld())
 	}), 99)
 
 	offsetX += int(3 + newGameBtn.GetWidth())
 
 	continueGameBtn := owner.Screen.Set(NewButton("MorgueBtn", "Morgue", 16, 2, 2, offsetX, offsetY, BtnTextCenter, ui.DefaultBorderColour, func() {
-		fmt.Println("Morgue...")
+		s.Owner.ChangeState(NewMorgueState())
 	}), 99)
 
 	offsetX += int(3 + continueGameBtn.GetWidth())
 
 	settingsBtn := owner.Screen.Set(NewButton("SettingsBtn", "Settings", 16, 2, 2, offsetX, offsetY, BtnTextCenter, ui.DefaultBorderColour, func() {
-		fmt.Println("Settings")
+		s.Owner.ChangeState(NewSettingsState())
 	}), 99)
 
 	offsetX += int(3 + settingsBtn.GetWidth())
 
 	owner.Screen.Set(NewButton("HelpBtn", "?", 0, 2, 2, offsetX, offsetY, BtnTextCenter, ui.BorderColour{"AnsiRed", "AnsiGreen", "AnsiYellow", "AnsiBlue"}, func() {
-		fmt.Println("Help")
+		s.Owner.ChangeState(NewHelpState())
 	}), 99)
 
 	// helpBtn.SetBorderColour(ui.BorderColour{"AnsiRed", "AnsiGreen", "AnsiYellow", "AnsiBlue"})
