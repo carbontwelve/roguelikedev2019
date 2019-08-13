@@ -26,7 +26,7 @@ func main() {
 	ui.MapThemeToColours(ui.LoadedThemeRepository.GetCurrentTheme())
 	ui.LinkWorkingColourPalette()
 
-	ui.MousePos = &ui.Mouse{}
+	ui.MousePos = &ui.Mouse{CellSize: 10}
 
 	// NOTE: Textures and Sounds MUST be loaded after Window/Audio initialization
 	game := state.NewEngine(NewLobbyState())
