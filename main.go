@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"os"
 	"raylibtinkering/state"
@@ -72,7 +71,7 @@ func main() {
 		rl.BeginDrawing()
 		rl.ClearBackground(ui.GameColours["Bg"])
 		game.Screen.Draw()
-		rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])
+		// rl.DrawText(fmt.Sprintf("Delta: %f", frameTime), 20, 20, 10, ui.GameColours["Fg"])
 		rl.EndDrawing()
 
 		if currentState.ShouldQuit() {

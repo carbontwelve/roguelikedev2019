@@ -15,11 +15,39 @@ const (
 	BtnTextRight
 )
 
-type Button struct {
-	ui.Component
+type iButtonStyle struct {
+	backColour  string
+	textColour  string
+	borderStyle ui.BorderStyle
+	borderColor ui.BorderColour
 }
 
-func NewButton(name, title string, width, padX, padY uint, offX, offY int, align btnTextAlign, border ui.BorderColour, onClick func()) *Button {
+type ButtonStyle struct {
+	normal iButtonStyle
+	hover  iButtonStyle
+}
+
+var DefaultButtonStyle = ButtonStyle{
+	normal: iButtonStyle{
+		backColour:  "Bg",
+		textColour:  "Fg",
+		borderStyle: ui.SingleWallBorder,
+		borderColor: ui.DefaultBorderColour,
+	},
+	hover: iButtonStyle{
+		backColour:  "Bg",
+		textColour:  "AnsiPurple",
+		borderStyle: ui.SingleWallBorder,
+		borderColor: ui.BorderColour{"AnsiPurple", "AnsiPurple", "AnsiPurple", "AnsiPurple"},
+	},
+}
+
+type Button struct {
+	ui.Component
+	style ButtonStyle
+}
+
+func NewButton(name, title string, width, padX, padY uint, offX, offY int, align btnTextAlign, style ButtonStyle, onClick func()) *Button {
 	var txtPos position.Position
 
 	titleLen := uint(utf8.RuneCountInString(title))
@@ -33,6 +61,7 @@ func NewButton(name, title string, width, padX, padY uint, offX, offY int, align
 
 	mL := &Button{
 		Component: *ui.NewComponent(name, w, h, offX, offY, true),
+		style:     style,
 	}
 
 	if align == BtnTextLeft {
@@ -44,8 +73,9 @@ func NewButton(name, title string, width, padX, padY uint, offX, offY int, align
 	}
 
 	mL.SetAutoClear(false) // We will "redraw" on hover
-	mL.SetBorderStyle(ui.SingleWallBorder)
-	mL.SetString(title, txtPos, ui.GameColours["Fg"], ui.ColourNC)
+	mL.SetBorderColour(style.normal.borderColor)
+	mL.SetBorderStyle(style.normal.borderStyle)
+	mL.SetString(title, txtPos, ui.GameColours[style.normal.textColour], ui.GameColours[style.normal.backColour])
 
 	//fmt.Println(fmt.Sprintf("W,H (%d, %d), TextPos (%d, %d), Textlen %d", w,h, txtPos.X, txtPos.Y, titleLen))
 
@@ -54,16 +84,16 @@ func NewButton(name, title string, width, padX, padY uint, offX, offY int, align
 	iH := func(component *ui.Component) {
 		if ui.MousePos.X >= offX && ui.MousePos.X <= offX+int(w) && ui.MousePos.Y >= offY && ui.MousePos.Y <= offY+int(h) {
 			mL.Clear()
-			mL.SetString(title, txtPos, ui.GameColours["AnsiPurple"], ui.ColourNC)
-			mL.SetBorderColour(ui.BorderColour{"AnsiPurple", "AnsiPurple", "AnsiPurple", "AnsiPurple"})
+			mL.SetString(title, txtPos, ui.GameColours[style.hover.textColour], ui.GameColours[style.hover.backColour])
+			mL.SetBorderColour(mL.style.hover.borderColor)
+			mL.SetBorderStyle(mL.style.hover.borderStyle)
 			hovering = true
 		} else {
-			//if hovering == true {
 			mL.Clear()
-			mL.SetString(title, txtPos, ui.GameColours["Fg"], ui.ColourNC)
-			mL.SetBorderColour(border)
+			mL.SetString(title, txtPos, ui.GameColours[style.normal.textColour], ui.GameColours[style.normal.backColour])
+			mL.SetBorderColour(mL.style.normal.borderColor)
+			mL.SetBorderStyle(mL.style.normal.borderStyle)
 			hovering = false
-			//}
 		}
 
 		if hovering && rl.IsMouseButtonPressed(rl.MouseLeftButton) {

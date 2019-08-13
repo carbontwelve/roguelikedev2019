@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"raylibtinkering/position"
 	"unicode/utf8"
@@ -15,9 +16,10 @@ type ComponentI interface {
 	GetHeight() uint
 	GetInnerHeight() uint
 	GetInnerWidth() uint
+	SetTitle(title string)
 	SetBorderStyle(bs BorderStyle)
 	SetBorderColour(bc BorderColour)
-	DrawBorder()
+	ReDraw()
 	SetChar(r uint, p position.Position, fg, bg rl.Color)
 	Clear()
 	ClearRow(y uint)
@@ -29,6 +31,11 @@ type ComponentI interface {
 	SetString(str string, p position.Position, fg, bg rl.Color)
 	SetCamera(cam *Camera)
 	SetAutoClear(b bool)
+}
+
+type TitleStyle struct {
+	leftChar, rightChar       uint
+	paddingLeft, paddingRight uint
 }
 
 type BorderStyle struct {
@@ -61,6 +68,8 @@ type Component struct {
 	camera           *Camera
 	visible          bool
 	autoClear        bool
+	title            string
+	titled           bool
 	inputHandler     ComponentInputEventHandler
 }
 
@@ -116,38 +125,44 @@ func (c *Component) SetBorderStyle(bs BorderStyle) {
 	c.bordered = bs != ZeroWallBorder
 
 	if c.bordered {
-		c.DrawBorder()
+		c.ReDraw()
 	}
 }
 
 func (c *Component) SetBorderColour(bc BorderColour) {
 	c.borderColor = bc
 	if c.bordered {
-		c.DrawBorder()
+		c.ReDraw()
 	}
 }
 
-func (c *Component) DrawBorder() {
+func (c *Component) drawBorder() {
 	if !c.bordered {
 		return
 	}
 
 	// Top/Bottom
 	for x := uint(0); x < c.Width-1; x++ {
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, GameColours[c.borderColor[0]], GameColours["bg"])
-		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["bg"])
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: 0}, GameColours[c.borderColor[0]], GameColours["Bg"])
+		c.SetChar(c.border.H, position.Position{X: int(x), Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["Bg"])
 	}
 
 	// Left/Right
 	for y := uint(0); y < c.Height-1; y++ {
-		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, GameColours[c.borderColor[3]], GameColours["bg"])
-		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, GameColours[c.borderColor[1]], GameColours["bg"])
+		c.SetChar(c.border.V, position.Position{X: 0, Y: int(y)}, GameColours[c.borderColor[3]], GameColours["Bg"])
+		c.SetChar(c.border.V, position.Position{X: int(c.Width - 1), Y: int(y)}, GameColours[c.borderColor[1]], GameColours["Bg"])
 	}
 
-	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, GameColours[c.borderColor[0]], GameColours["bg"])
-	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, GameColours[c.borderColor[1]], GameColours["bg"])
-	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["bg"])
-	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, GameColours[c.borderColor[3]], GameColours["bg"])
+	c.SetChar(c.border.NE, position.Position{X: int(c.Width - 1), Y: 0}, GameColours[c.borderColor[0]], GameColours["Bg"])
+	c.SetChar(c.border.SE, position.Position{X: int(c.Width - 1), Y: int(c.Height - 1)}, GameColours[c.borderColor[1]], GameColours["Bg"])
+	c.SetChar(c.border.SW, position.Position{X: 0, Y: int(c.Height - 1)}, GameColours[c.borderColor[2]], GameColours["Bg"])
+	c.SetChar(c.border.NW, position.Position{X: 0, Y: 0}, GameColours[c.borderColor[3]], GameColours["Bg"])
+}
+
+// Redraw the permanent style of this component. e.g Border, Title, etc
+func (c *Component) ReDraw() {
+	c.drawBorder() // Border comes before title
+	c.drawTitle()  // Title is drawn on top of border and replaces some tiles
 }
 
 func (c *Component) SetChar(r uint, p position.Position, fg, bg rl.Color) {
@@ -225,6 +240,21 @@ func (c *Component) SetString(str string, p position.Position, fg, bg rl.Color) 
 		c.bg = bg
 		c.fg = fg
 	}
+}
+
+func (c *Component) SetTitle(title string) {
+	c.title = title
+	c.titled = c.title != ""
+	c.drawTitle()
+}
+
+func (c *Component) drawTitle() {
+	if c.titled == false {
+		return
+	}
+
+	t := fmt.Sprintf("] %s [", c.title)
+	c.SetString(t, position.Position{2, 0}, GameColours["Fg"], GameColours["Bg"])
 }
 
 func (c *Component) SetCamera(cam *Camera) {

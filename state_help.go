@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"raylibtinkering/position"
 	"raylibtinkering/state"
 	"raylibtinkering/ui"
 )
@@ -21,11 +22,16 @@ func NewHelpState() *HelpState {
 func (s *HelpState) Pushed(owner *state.Engine) error {
 	owner.Screen.Reset() // @todo move this to a on state change function as we may not want to reset on World construction...
 
-	offsetX := 3
-	// @todo / 10 should be / tileHeight for the tile grid this is working on...
-	offsetY := (rl.GetScreenHeight() / 10) - 8
+	viewport := owner.Screen.Set(ui.NewComponent("Viewport", position.DungeonWidth-2, position.DungeonHeight-2, 1, 1, true), 10)
+	viewport.SetAutoClear(false)
+	viewport.SetTitle("Help")
+	viewport.SetBorderStyle(ui.SingleWallBorder)
 
-	owner.Screen.Set(NewButton("BackBtn", "Back", 16, 2, 2, offsetX, offsetY, BtnTextCenter, ui.DefaultBorderColour, func() {
+	smallButtonStyle := DefaultButtonStyle
+	smallButtonStyle.normal.borderStyle = ui.ZeroWallBorder
+	smallButtonStyle.hover.borderStyle = ui.ZeroWallBorder
+
+	owner.Screen.Set(NewButton("BackBtn", "] <B>ack [", 0, 1, 1, (rl.GetScreenWidth()/10)-14, 0, BtnTextCenter, smallButtonStyle, func() {
 		s.Owner.ChangeState(NewLobbyState())
 	}), 99)
 
